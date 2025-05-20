@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Report Tool</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #673AB7;
+      --secondary-color: #4CAF50;
+      --accent-color: #FFC107;
+      --header-height: 56px;
+    }
+
+    body {
+      padding-top: var(--header-height);
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    .notification {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .special-task-label::before {
+      content: "★";
+      color: var(--accent-color);
+      margin-right: 5px;
+    }
+
+    .report-container {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+      white-space: pre-wrap;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .header-buttons {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">DailyReport</a>
+      <div class="d-flex">
+        <button class="btn btn-outline-light me-2" onclick="toggleTheme()">
+          <span id="theme-icon">🌓</span> Theme
+        </button>
+        <button class="btn btn-light" onclick="showAdminLogin()">Admin</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notification -->
+  <div class="notification" id="adminNotification">
+    Admin Message: System is running normally.
+  </div>
+
+  <!-- Main Form -->
+  <main class="container py-4" id="mainContent">
+    <h1 class="text-center mb-4">Daily Issue Report Generator</h1>
+    
+    <div class="mb-3">
+      <label for="date" class="form-label">Date:</label>
+      <input type="date" class="form-control" id="date">
+    </div>
+    
+    <div class="mb-3">
+      <label for="nameSelect" class="form-label">Employee Name:</label>
+      <select class="form-select" id="nameSelect" onchange="fillEmployeeDetails()">
+        <option value="">-- Select Employee --</option>
+        <option value="Sujan Tarafdar">Sujan Tarafdar</option>
+        <option value="Md Safikul Islam">Md Safikul Islam</option>
+        <option value="Sajid Hossain">Sajid Hossain</option>
+        <option value="Md. Shamsur Rahman">Md. Shamsur Rahman</option>
+        <option value="MD Shakib">MD Shakib</option>
+        <option value="Niaz Mahmud">Niaz Mahmud</option>
+        <option value="GM Sakib">GM Sakib</option>
+      </select>
+    </div>
+    
+    <div class="mb-3">
+      <label for="employeeName" class="form-label">Employee Name:</label>
+      <input type="text" class="form-control" id="employeeName" placeholder="Enter name">
+    </div>
+    
+    <div class="mb-3">
+      <label for="employeeId" class="form-label">Employee ID:</label>
+      <input type="text" class="form-control" id="employeeId" placeholder="Enter ID">
+    </div>
+    
+    <div class="mb-3">
+      <label for="dutyShift" class="form-label">Duty Shift:</label>
+      <select class="form-select" id="dutyShift">
+        <option value="Morning">Morning</option>
+        <option value="Evening">Evening</option>
+        <option value="Night">Night</option>
+      </select>
+    </div>
+    
+    <div class="mb-3">
+      <label for="issues" class="form-label">List of Issues:</label>
+      <textarea class="form-control" id="issues" rows="5" placeholder="Enter each issue on a new line"></textarea>
+    </div>
+    
+    <div class="mb-3">
+      <div class="special-task-label">
+        <label for="specialTask" class="form-label">Special Task/Note:</label>
+      </div>
+      <textarea class="form-control" id="specialTask" rows="3" placeholder="Any special accomplishments or notes..."></textarea>
+    </div>
+    
+    <div class="d-grid gap-2 mb-4">
+      <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+      <button class="btn btn-secondary" onclick="copyReport()">Copy Report</button>
+    </div>
+    
+    <h2 class="text-center mb-3">Generated Report</h2>
+    <pre class="report-container" id="reportOutput"></pre>
+  </main>
+
+  <!-- Admin Login -->
+  <div class="container py-4" id="loginForm" style="display:none;">
+    <h1 class="text-center mb-4">Admin Login</h1>
+    <div class="mb-3">
+      <label for="adminUsername" class="form-label">Username:</label>
+      <input type="text" class="form-control" id="adminUsername" value="admin">
+    </div>
+    <div class="mb-3">
+      <label for="adminPassword" class="form-label">Password:</label>
+      <input type="password" class="form-control" id="adminPassword" value="admin123">
+    </div>
+    <div id="loginError" class="text-danger mb-3"></div>
+    <div class="d-grid gap-2">
+      <button class="btn btn-primary" onclick="adminLogin()">Login</button>
+      <button class="btn btn-outline-secondary" onclick="showMainContent()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="container py-4" id="adminPanel" style="display:none;">
+    <h1 class="text-center mb-4">Admin Dashboard</h1>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Employee</th>
+            <th>Issues</th>
+            <th>Special Task</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="reportsTable">
+          <!-- Reports will appear here -->
+        </tbody>
+      </table>
+    </div>
+    <div class="d-grid mt-3">
+      <button class="btn btn-outline-danger" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast align-items-center text-white bg-primary" id="toast">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Data Storage
+    const employees = {
+      "Sujan Tarafdar": "Salt-S-063",
+      "Md Safikul Islam": "Salt-S-076",
+      "Sajid Hossain": "Salt-S-077",
+      "Md. Shamsur Rahman": "Salt-S-049",
+      "MD Shakib": "Salt-S-080",
+      "Niaz Mahmud": "Salt-S-089",
+      "GM Sakib": "Salt-S-087"
+    };
+    
+    let allReports = JSON.parse(localStorage.getItem('allReports')) || [];
+    const adminCredentials = {
+      username: "admin",
+      password: "admin123"
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('date').valueAsDate = new Date();
+      loadReportsTable();
+    });
+
+    // Fill employee details when selected
+    function fillEmployeeDetails() {
+      const selectedName = document.getElementById('nameSelect').value;
+      if (selectedName && employees[selectedName]) {
+        document.getElementById('employeeName').value = selectedName;
+        document.getElementById('employeeId').value = employees[selectedName];
+      }
+    }
+
+    // Generate report with your exact format
+    function generateReport() {
+      const date = document.getElementById('date').value;
+      const name = document.getElementById('employeeName').value.trim();
+      const id = document.getElementById('employeeId').value.trim();
+      const shift = document.getElementById('dutyShift').value;
+      const issues = document.getElementById('issues').value.trim().split('\n').filter(line => line.trim());
+      const specialTask = document.getElementById('specialTask').value.trim();
+
+      if (!name || !id || !shift || issues.length === 0) {
+        showToast('Please fill all required fields!', 'danger');
+        return;
+      }
+
+      // Count issues
+      const issueCounts = {};
+      issues.forEach(issue => {
+        issueCounts[issue] = (issueCounts[issue] || 0) + 1;
+      });
+
+      const total = issues.length;
+      const dateFormatted = new Date(date).toLocaleDateString('en-GB').replace(/\//g, '.');
+
+      // Generate report text in your exact format
+      let report = `Employee Name: ${name}\n`;
+      report += `Employee ID: ${id}\n`;
+      report += `Date: ${dateFormatted}\n`;
+      report += `Duty Shift: ${shift}\n`;
+      report += `Total Issues Received: ${total}\n`;
+      report += `Total Issues Solved: ${total}\n`;
+      report += `Total Issues Processing: 0\n\n`;
+      report += `------* Type of Issues *------\n`;
+
+      for (const issue in issueCounts) {
+        report += `${issue}: ${issueCounts[issue]}\n`;
+      }
+
+      if (specialTask) {
+        report += `\n★ Special Task/NOTE:\n${specialTask}\n`;
+      }
+
+      // Display report
+      document.getElementById('reportOutput').textContent = report;
+      
+      // Save report
+      const reportData = {
+        date: date,
+        name: name,
+        id: id,
+        shift: shift,
+        issues: total,
+        specialTask: specialTask,
+        reportContent: report,
+        timestamp: new Date().toISOString()
+      };
+      
+      allReports.push(reportData);
+      localStorage.setItem('allReports', JSON.stringify(allReports));
+      
+      showToast('Report generated successfully!');
+    }
+
+    function copyReport() {
+      const reportText = document.getElementById('reportOutput').textContent;
+      if (reportText) {
+        navigator.clipboard.writeText(reportText)
+          .then(() => showToast('Report copied to clipboard!'))
+          .catch(() => showToast('Failed to copy!', 'danger'));
+      } else {
+        showToast('No report to copy!', 'danger');
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('bg-dark');
+      document.body.classList.toggle('text-white');
+      const icon = document.querySelector('[onclick="toggleTheme()"]');
+      icon.textContent = document.body.classList.contains('bg-dark') ? '☀️ Theme' : '🌓 Theme';
+    }
+
+    function showToast(message, type = 'primary') {
+      const toastEl = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.textContent = message;
+      toastEl.className = `toast align-items-center text-white bg-${type} show`;
+      setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 3000);
+    }
+
+    function showAdminLogin() {
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+    }
+
+    function showMainContent() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    }
+
+    function adminLogin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      
+      if (username === adminCredentials.username && password === adminCredentials.password) {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('loginError').textContent = '';
+        loadReportsTable();
+        showToast('Admin login successful!');
+      } else {
+        document.getElementById('loginError').textContent = 'Invalid username or password';
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      showToast('Logged out successfully');
+    }
+
+    function loadReportsTable() {
+      const table = document.getElementById('reportsTable');
+      table.innerHTML = '';
+      
+      allReports.forEach(report => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${new Date(report.date).toLocaleDateString()}</td>
+          <td>${report.name} (${report.id})</td>
+          <td>${report.issues}</td>
+          <td>${report.specialTask || '-'}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" onclick="viewFullReport('${report.timestamp}')">View</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${report.timestamp}')">Delete</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function viewFullReport(timestamp) {
+      const report = allReports.find(r => r.timestamp === timestamp);
+      if (report) {
+        alert(report.reportContent);
+      }
+    }
+
+    function deleteReport(timestamp) {
+      if (confirm('Are you sure you want to delete this report?')) {
+        allReports = allReports.filter(r => r.timestamp !== timestamp);
+        localStorage.setItem('allReports', JSON.stringify(allReports));
+        loadReportsTable();
+        showToast('Report deleted successfully!');
+      }
+    }
+  </script>
+</body>
+</html>
