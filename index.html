@@ -82,6 +82,30 @@
   </style>
 </head>
 <body>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyArD5lxl1Q5GcGjfd0e6m8MXO3Gglhfs8A",
+    authDomain: "daily-report-tool.firebaseapp.com",
+    projectId: "daily-report-tool",
+    storageBucket: "daily-report-tool.firebasestorage.app",
+    messagingSenderId: "472203210727",
+    appId: "1:472203210727:web:84ab4a7bd165d909071742",
+    measurementId: "G-3E03WLE8ZX"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
   <!-- Header -->
   <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
