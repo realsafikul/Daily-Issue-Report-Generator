@@ -11,12 +11,29 @@
       --secondary-color: #4CAF50;
       --accent-color: #FFC107;
       --header-height: 56px;
+      --bg-color: #f8f9fa;
+      --text-color: #212529;
+      --report-bg: #ffffff;
+      --report-text: #212529;
+    }
+
+    [data-bs-theme="dark"] {
+      --primary-color: #5e35b1;
+      --secondary-color: #388e3c;
+      --accent-color: #ffb300;
+      --bg-color: #212529;
+      --text-color: #f8f9fa;
+      --report-bg: #2c3034;
+      --report-text: #f8f9fa;
     }
 
     body {
       padding-top: var(--header-height);
       font-family: 'Segoe UI', sans-serif;
       min-height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .notification {
@@ -33,11 +50,13 @@
     }
 
     .report-container {
-      background-color: #f8f9fa;
+      background-color: var(--report-bg);
+      color: var(--report-text);
       border-radius: 5px;
       padding: 15px;
       margin-bottom: 15px;
       white-space: pre-wrap;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     #toast {
@@ -45,6 +64,14 @@
       bottom: 20px;
       right: 20px;
       z-index: 1000;
+    }
+
+    footer {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      margin-top: 30px;
     }
 
     @media (max-width: 768px) {
@@ -178,6 +205,13 @@
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="mb-0">Daily Report Tool &copy; 2023 | Developed by Your Team</p>
+    </div>
+  </footer>
+
   <!-- Toast Notification -->
   <div class="toast align-items-center text-white bg-primary" id="toast">
     <div class="d-flex">
@@ -209,6 +243,12 @@
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('date').valueAsDate = new Date();
       loadReportsTable();
+      
+      // Check for saved theme preference
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        document.getElementById('theme-icon').textContent = '☀️';
+      }
     });
 
     // Fill employee details when selected
@@ -294,10 +334,18 @@
     }
 
     function toggleTheme() {
-      document.body.classList.toggle('bg-dark');
-      document.body.classList.toggle('text-white');
-      const icon = document.querySelector('[onclick="toggleTheme()"]');
-      icon.textContent = document.body.classList.contains('bg-dark') ? '☀️ Theme' : '🌓 Theme';
+      const htmlElement = document.documentElement;
+      const isDark = htmlElement.getAttribute('data-bs-theme') === 'dark';
+      
+      if (isDark) {
+        htmlElement.removeAttribute('data-bs-theme');
+        document.getElementById('theme-icon').textContent = '🌓';
+        localStorage.setItem('darkMode', 'false');
+      } else {
+        htmlElement.setAttribute('data-bs-theme', 'dark');
+        document.getElementById('theme-icon').textContent = '☀️';
+        localStorage.setItem('darkMode', 'true');
+      }
     }
 
     function showToast(message, type = 'primary') {
