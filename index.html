@@ -74,6 +74,49 @@
       margin-top: 30px;
     }
 
+    .ss-counter-container {
+      background: var(--report-bg);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      margin-bottom: 1rem;
+    }
+
+    .ss-textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      resize: vertical;
+    }
+
+    .ss-output-container {
+      position: relative;
+    }
+
+    .ss-output {
+      background: var(--bg-color);
+      padding: 10px 45px 10px 10px;
+      border-radius: 5px;
+      min-height: 50px;
+      border: 1px solid #ced4da;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .ss-copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
     @media (max-width: 768px) {
       .header-buttons {
         margin-top: 10px;
@@ -153,6 +196,32 @@
         <label for="specialTask" class="form-label">Special Task/Note:</label>
       </div>
       <textarea class="form-control" id="specialTask" rows="3" placeholder="Any special accomplishments or notes..."></textarea>
+    </div>
+
+    <!-- SS Number Counter Section -->
+    <div class="ss-counter-container">
+      <h5 class="mb-3">SS Number Counter</h5>
+      <div class="mb-3">
+        <textarea id="ssInput" 
+                  class="ss-textarea form-control"
+                  placeholder="Paste SS numbers here..."></textarea>
+      </div>
+      <div class="mb-3">
+        <button onclick="processSS()" 
+                class="btn btn-primary"
+                style="padding: 10px 20px; font-size: 14px;">
+          Count & Generate Output
+        </button>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Result:</label>
+        <div class="ss-output-container">
+          <div id="ssOutput" class="ss-output"></div>
+          <button id="ssCopyBtn" class="btn btn-sm btn-outline-secondary ss-copy-btn" onclick="copySSResult()" style="display: none;">
+            Copy
+          </button>
+        </div>
+      </div>
     </div>
     
     <div class="d-grid gap-2 mb-4">
@@ -262,6 +331,37 @@
       }
     }
 
+    // SS Number Counter Function
+    function processSS() {
+      let raw = document.getElementById("ssInput").value;
+
+      // Split into lines
+      let list = raw.split(/\r?\n/)
+        // Trim spaces, remove quotes
+        .map(item => item.replace(/"/g, "").trim())
+        // Remove empty lines
+        .filter(item => item.length > 0);
+
+      let count = list.length;
+      let output = count + " ( " + list.join(" ") + " )";
+
+      document.getElementById("ssOutput").innerHTML = output;
+      document.getElementById("ssCopyBtn").style.display = 'block';
+      showToast('SS numbers processed successfully!');
+    }
+
+    // Copy SS Result Function
+    function copySSResult() {
+      const ssOutput = document.getElementById("ssOutput").textContent;
+      if (ssOutput) {
+        navigator.clipboard.writeText(ssOutput)
+          .then(() => showToast('SS result copied to clipboard!'))
+          .catch(() => showToast('Failed to copy SS result!', 'danger'));
+      } else {
+        showToast('No SS result to copy!', 'danger');
+      }
+    }
+
     // Generate report with your exact format
     function generateReport() {
       const date = document.getElementById('date').value;
@@ -276,10 +376,12 @@
         return;
       }
 
-      // Count issues
+      // Count issues - CASE INSENSITIVE
       const issueCounts = {};
       issues.forEach(issue => {
-        issueCounts[issue] = (issueCounts[issue] || 0) + 1;
+        // Convert to lowercase for case-insensitive counting
+        const normalizedIssue = issue.toLowerCase().trim();
+        issueCounts[normalizedIssue] = (issueCounts[normalizedIssue] || 0) + 1;
       });
 
       const total = issues.length;
@@ -295,8 +397,18 @@
       report += `Total Issues Processing: 0\n\n`;
       report += `------* Type of Issues *------\n`;
 
-      for (const issue in issueCounts) {
-        report += `${issue}: ${issueCounts[issue]}\n`;
+      // Display original case but count case-insensitively
+      const uniqueIssues = {};
+      issues.forEach(issue => {
+        const normalized = issue.toLowerCase().trim();
+        if (!uniqueIssues[normalized]) {
+          uniqueIssues[normalized] = issue; // Store the original case
+        }
+      });
+
+      for (const normalizedIssue in issueCounts) {
+        const originalIssue = uniqueIssues[normalizedIssue];
+        report += `${originalIssue}: ${issueCounts[normalizedIssue]}\n`;
       }
 
       if (specialTask) {
