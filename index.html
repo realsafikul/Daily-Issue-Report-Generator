@@ -118,7 +118,7 @@
 
   <!-- Notification -->
   <div class="notification" id="adminNotification">
-    Message: সফটওয়্যার এ Processing Issues কাউন্ট এর অপশন এড করা হয়েছে,আপনাদের রিপোর্ট করাকে আরো সহজ করার জন্য আমি সর্বদা আছি 
+    Message: steam download slow issue is not solved yet, LAN card a issue asa, time lagbe issue ta solve hote
   </div>
 
   <!-- Main Form -->
@@ -158,6 +158,7 @@
     <div class="mb-3">
       <label for="dutyShift" class="form-label">Duty Shift:</label>
       <select class="form-select" id="dutyShift">
+        <option value="">-- Select Shift --</option>
         <option value="Day">Day</option>
         <option value="Evening">Evening</option>
         <option value="Night">Night</option>
@@ -171,7 +172,7 @@
 
     <!-- SS Number Counter Section -->
     <div class="ss-counter-container">
-      <h5 class="mb-3">Processing Issues</h5>
+      <h5 class="mb-3">SS Number Counter (Processing Issues)</h5>
       <div class="mb-3">
         <textarea id="ssInput" class="ss-textarea form-control" placeholder="Paste SS numbers or processing issues here (one per line)..."></textarea>
       </div>
@@ -301,9 +302,22 @@
                                       .map(item => item.replace(/"/g, "").trim())
                                       .filter(item => item.length > 0);
 
-      if (!name || !id || !shift || issues.length === 0) {
+      // Validation: Check if shift is selected
+      if (!shift) {
+        showToast('Please select a duty shift!', 'danger');
+        return;
+      }
+
+      // Validation: Check other required fields
+      if (!name || !id || issues.length === 0) {
         showToast('Please fill all required fields!', 'danger');
         return;
+      }
+
+      // Adjust date for night shift
+      let reportDate = new Date(date);
+      if (shift === "Night") {
+        reportDate.setDate(reportDate.getDate() - 1);
       }
 
       const issueCounts = {};
@@ -315,7 +329,7 @@
       const totalReceived = issues.length;
       const totalProcessing = processingIssues.length;
       const totalSolved = totalReceived - totalProcessing;
-      const dateFormatted = new Date(date).toLocaleDateString('en-GB').replace(/\//g, '.');
+      const dateFormatted = reportDate.toLocaleDateString('en-GB').replace(/\//g, '.');
 
       let report = `Employee Name: ${name}\n`;
       report += `Employee ID: ${id}\n`;
@@ -323,8 +337,15 @@
       report += `Duty Shift: ${shift}\n`;
       report += `Total Issues Received: ${totalReceived}\n`;
       report += `Total Issues Solved: ${totalSolved}\n`;
-      report += `Total Issues Processing: ${totalProcessing} ( ${processingIssues.join(" ")} )\n\n`;
-      report += `------* Type of Issues *------\n`;
+      
+      // Only show processing issues if there are any
+      if (totalProcessing > 0) {
+        report += `Total Issues Processing: ${totalProcessing} ( ${processingIssues.join(" ")} )\n`;
+      } else {
+        report += `Total Issues Processing: ${totalProcessing}\n`;
+      }
+      
+      report += `\n------* Type of Issues *------\n`;
 
       const uniqueIssues = {};
       issues.forEach(issue => {
@@ -346,7 +367,7 @@
       document.getElementById('reportOutput').textContent = report;
 
       const reportData = {
-        date: date,
+        date: dateFormatted,
         name: name,
         id: id,
         shift: shift,
@@ -441,7 +462,7 @@
       allReports.forEach(report => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${new Date(report.date).toLocaleDateString()}</td>
+          <td>${report.date}</td>
           <td>${report.name} (${report.id})</td>
           <td>${report.issues}</td>
           <td>${report.specialTask || '-'}</td>
