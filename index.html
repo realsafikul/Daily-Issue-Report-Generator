@@ -94,6 +94,26 @@
       resize: vertical;
     }
 
+    .physical-support-container {
+      background: var(--report-bg);
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .physical-support-label {
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .physical-support-input {
+      max-width: 150px;
+      font-weight: bold;
+      text-align: center;
+    }
+
     @media (max-width: 768px) {
       .header-buttons {
         margin-top: 10px;
@@ -170,6 +190,23 @@
       <textarea class="form-control" id="issues" rows="5" placeholder="Enter each issue on a new line"></textarea>
     </div>
 
+    <!-- Physical Support Section -->
+    <div class="physical-support-container">
+      <div class="physical-support-label">
+        <label for="physicalSupport">Physical Support Count:</label>
+      </div>
+      <div class="mb-3">
+        <input type="number" 
+               class="form-control physical-support-input" 
+               id="physicalSupport" 
+               value="0" 
+               min="0" 
+               onchange="updatePhysicalSupport()">
+        <small class="form-text text-muted">Enter the number of physical support tasks completed today. This will be automatically added to total issues and solved count.</small>
+      </div>
+      <div id="physicalSupportPreview" class="mt-2"></div>
+    </div>
+
     <!-- SS Number Counter Section -->
     <div class="ss-counter-container">
       <h5 class="mb-3">SS Number Counter (Processing Issues)</h5>
@@ -222,6 +259,7 @@
             <th>Date</th>
             <th>Employee</th>
             <th>Issues</th>
+            <th>Physical Support</th>
             <th>Special Task</th>
             <th>Actions</th>
           </tr>
@@ -274,6 +312,7 @@
     document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('date').valueAsDate = new Date();
       loadReportsTable();
+      updatePhysicalSupport();
 
       if (localStorage.getItem('darkMode') === 'true') {
         document.documentElement.setAttribute('data-bs-theme', 'dark');
@@ -289,6 +328,25 @@
       }
     }
 
+    function updatePhysicalSupport() {
+      const physicalSupport = parseInt(document.getElementById('physicalSupport').value) || 0;
+      const previewElement = document.getElementById('physicalSupportPreview');
+      
+      if (physicalSupport > 0) {
+        previewElement.innerHTML = `
+          <div class="alert alert-info p-2">
+            <strong>Note:</strong> Physical Support will add ${physicalSupport} to:
+            <ul class="mb-0 mt-1">
+              <li>Total Issues Received: +${physicalSupport}</li>
+              <li>Total Issues Solved: +${physicalSupport} (auto-completed)</li>
+            </ul>
+          </div>
+        `;
+      } else {
+        previewElement.innerHTML = '';
+      }
+    }
+
     function generateReport() {
       const date = document.getElementById('date').value;
       const name = document.getElementById('employeeName').value.trim();
@@ -296,6 +354,7 @@
       const shift = document.getElementById('dutyShift').value;
       const issues = document.getElementById('issues').value.trim().split('\n').filter(line => line.trim());
       const specialTask = document.getElementById('specialTask').value.trim();
+      const physicalSupport = parseInt(document.getElementById('physicalSupport').value) || 0;
 
       const ssInput = document.getElementById('ssInput').value.trim();
       const processingIssues = ssInput.split(/\r?\n/)
@@ -309,8 +368,14 @@
       }
 
       // Validation: Check other required fields
-      if (!name || !id || issues.length === 0) {
-        showToast('Please fill all required fields!', 'danger');
+      if (!name || !id) {
+        showToast('Please fill employee name and ID!', 'danger');
+        return;
+      }
+
+      // Check if there are any issues or physical support
+      if (issues.length === 0 && physicalSupport === 0) {
+        showToast('Please enter at least one issue or physical support count!', 'danger');
         return;
       }
 
@@ -326,7 +391,8 @@
         issueCounts[normalizedIssue] = (issueCounts[normalizedIssue] || 0) + 1;
       });
 
-      const totalReceived = issues.length;
+      const regularIssuesCount = issues.length;
+      const totalReceived = regularIssuesCount + physicalSupport;
       const totalProcessing = processingIssues.length;
       const totalSolved = totalReceived - totalProcessing;
       const dateFormatted = reportDate.toLocaleDateString('en-GB').replace(/\//g, '.');
@@ -360,6 +426,11 @@
         report += `${originalIssue}: ${issueCounts[normalizedIssue]}\n`;
       }
 
+      // Add Physical Support entry if any
+      if (physicalSupport > 0) {
+        report += `Physical Support: ${physicalSupport}\n`;
+      }
+
       if (specialTask) {
         report += `\n★ Special Task/NOTE:\n${specialTask}\n`;
       }
@@ -372,6 +443,8 @@
         id: id,
         shift: shift,
         issues: totalReceived,
+        physicalSupport: physicalSupport,
+        regularIssues: regularIssuesCount,
         processing: totalProcessing,
         solved: totalSolved,
         specialTask: specialTask,
@@ -464,7 +537,8 @@
         row.innerHTML = `
           <td>${report.date}</td>
           <td>${report.name} (${report.id})</td>
-          <td>${report.issues}</td>
+          <td>${report.issues} ${report.physicalSupport > 0 ? `(${report.regularIssues} + ${report.physicalSupport} physical)` : ''}</td>
+          <td>${report.physicalSupport > 0 ? `${report.physicalSupport} ✓` : '-'}</td>
           <td>${report.specialTask || '-'}</td>
           <td>
             <button class="btn btn-sm btn-outline-primary" onclick="viewFullReport('${report.timestamp}')">View</button>
