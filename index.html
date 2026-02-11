@@ -3,279 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daily Report Tool</title>
+  <title>Daily Report Tool - Enhanced</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary-color: #673AB7;
+      --primary-dark: #5a2d9c;
       --secondary-color: #4CAF50;
       --accent-color: #FFC107;
       --tl-color: #2196F3;
-      --header-height: 56px;
+      --danger-color: #f44336;
+      --header-height: 64px;
       --bg-color: #f8f9fa;
       --text-color: #212529;
-      --report-bg: #ffffff;
-      --report-text: #212529;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --card-bg: #ffffff;
+      --border-color: #dee2e6;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     [data-bs-theme="dark"] {
-      --primary-color: #5e35b1;
-      --secondary-color: #388e3c;
-      --accent-color: #ffb300;
-      --tl-color: #1976D2;
-      --bg-color: #212529;
-      --text-color: #f8f9fa;
-      --report-bg: #2c3034;
-      --report-text: #f8f9fa;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      --primary-color: #7e57c2;
+      --primary-dark: #673ab7;
+      --secondary-color: #66bb6a;
+      --accent-color: #ffca28;
+      --tl-color: #42a5f5;
+      --danger-color: #ef5350;
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --card-bg: #1e1e1e;
+      --border-color: #333333;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       padding-top: var(--header-height);
-      font-family: 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       min-height: 100vh;
       background-color: var(--bg-color);
       color: var(--text-color);
-      transition: background-color 0.3s, color 0.3s;
+      transition: var(--transition);
     }
 
+    /* HEADER */
+    .navbar {
+      height: var(--header-height);
+      box-shadow: var(--shadow-sm);
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+    }
+
+    .navbar-brand {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* NOTIFICATION BANNER */
     .notification {
       background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
       color: white;
       text-align: center;
-      padding: 12px;
+      padding: 14px;
       font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      animation: slideDown 0.5s ease-out;
     }
 
-    .special-task-label::before {
-      content: "★";
-      color: var(--accent-color);
-      margin-right: 5px;
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
-    .report-container {
-      background-color: var(--report-bg);
-      color: var(--report-text);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 15px;
-      white-space: pre-wrap;
-      transition: background-color 0.3s, color 0.3s;
-      border: 1px solid rgba(0,0,0,0.1);
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000;
-    }
-
-    footer {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 15px 0;
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    .ss-counter-container {
-      background: var(--report-bg);
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-      margin-bottom: 1rem;
-      box-shadow: var(--card-shadow);
-    }
-
-    .ss-textarea {
-      width: 100%;
-      height: 120px;
-      padding: 10px;
-      font-size: 14px;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      resize: vertical;
-    }
-
-    .physical-support-container {
-      background: var(--report-bg);
-      padding: 15px;
-      border-radius: 8px;
-      border: 2px solid var(--primary-color);
-      margin-bottom: 1rem;
-      box-shadow: var(--card-shadow);
-    }
-
-    .physical-support-label {
-      font-weight: bold;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
-
-    .physical-support-input {
-      max-width: 150px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .tl-overview-container {
-      background: var(--report-bg);
-      padding: 15px;
-      border-radius: 8px;
-      border: 2px solid var(--tl-color);
-      margin-bottom: 1rem;
-      box-shadow: var(--card-shadow);
-    }
-
-    .tl-overview-header {
-      font-weight: bold;
-      color: var(--tl-color);
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .repeated-issue {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      padding: 8px;
-      border-radius: 6px;
-      background: rgba(33, 150, 243, 0.1);
-      border-left: 4px solid var(--tl-color);
-    }
-
-    .repeated-issue.high {
-      background: rgba(255, 193, 7, 0.1);
-      border-left-color: var(--accent-color);
-    }
-
-    .repeated-issue.critical {
-      background: rgba(244, 67, 54, 0.1);
-      border-left-color: #f44336;
-    }
-
-    .issue-category {
-      font-weight: bold;
-      flex: 1;
-    }
-
-    .issue-count {
-      background: var(--tl-color);
-      color: white;
-      padding: 2px 10px;
-      border-radius: 12px;
-      font-size: 0.9em;
-      margin-left: 10px;
-      font-weight: bold;
-      min-width: 45px;
-      text-align: center;
-    }
-
-    .issue-count.high {
-      background: var(--accent-color);
-    }
-
-    .issue-count.critical {
-      background: #f44336;
-    }
-
-    .empty-message {
-      text-align: center;
-      color: #6c757d;
-      font-style: italic;
-      padding: 20px;
-    }
-
-    .overview-badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.85em;
-      font-weight: bold;
-    }
-
-    .fixed-issue-keywords {
-      font-size: 0.8em;
-      color: #6c757d;
-      margin-top: 10px;
-      padding: 10px;
-      background: rgba(0,0,0,0.03);
-      border-radius: 5px;
-      border-left: 3px solid var(--tl-color);
-    }
-
-    .keyword-chip {
-      display: inline-block;
-      background: rgba(33, 150, 243, 0.1);
-      color: var(--tl-color);
-      padding: 2px 8px;
-      border-radius: 12px;
-      margin: 2px;
-      font-size: 0.8em;
-    }
-
-    .processing-persons-container {
-      background: var(--report-bg);
-      padding: 15px;
-      border-radius: 8px;
-      border: 2px solid #6f42c1;
-      margin-bottom: 1rem;
-      box-shadow: var(--card-shadow);
-    }
-
-    .processing-persons-header {
-      font-weight: bold;
-      color: #6f42c1;
-      margin-bottom: 10px;
-    }
-
+    /* DASHBOARD */
     .dashboard-container {
-      min-height: 70vh;
+      min-height: calc(100vh - var(--header-height) - 100px);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 2rem 1rem;
     }
 
     .dashboard-card {
-      background: var(--report-bg);
-      border-radius: 16px;
-      padding: 40px 30px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 3rem 2rem;
       text-align: center;
-      box-shadow: var(--card-shadow);
-      max-width: 600px;
+      box-shadow: var(--shadow-lg);
+      max-width: 700px;
       width: 100%;
-      border: 1px solid rgba(0,0,0,0.1);
+      border: 1px solid var(--border-color);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .dashboard-title {
       color: var(--primary-color);
-      margin-bottom: 30px;
+      margin-bottom: 1.5rem;
       font-weight: 700;
+      font-size: 2rem;
     }
 
     .option-card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      margin: 15px 0;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 1.25rem 0;
       cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid #e9ecef;
+      transition: var(--transition);
+      border: 2px solid var(--border-color);
       text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .option-card:hover::before {
+      left: 100%;
     }
 
     .option-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
       border-color: var(--primary-color);
     }
 
@@ -284,9 +167,14 @@
     }
 
     .option-icon {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
+      font-size: 3rem;
+      margin-bottom: 1rem;
       color: var(--primary-color);
+      transition: var(--transition);
+    }
+
+    .option-card:hover .option-icon {
+      transform: scale(1.1) rotate(5deg);
     }
 
     .option-card.tl-option .option-icon {
@@ -295,8 +183,8 @@
 
     .option-title {
       font-weight: 700;
-      font-size: 1.3rem;
-      margin-bottom: 10px;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
       color: var(--primary-color);
     }
 
@@ -305,122 +193,470 @@
     }
 
     .option-desc {
-      color: #6c757d;
-      font-size: 0.95rem;
+      color: var(--text-color);
+      opacity: 0.8;
+      font-size: 1rem;
+      line-height: 1.6;
     }
 
-    .back-to-dashboard {
-      margin-top: 20px;
-      display: inline-block;
-      text-decoration: none;
-      color: var(--primary-color);
-      font-weight: 500;
-    }
-
-    .back-to-dashboard:hover {
-      text-decoration: underline;
-    }
-
-    .report-type-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-
-    .employee-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    .tl-badge {
-      background-color: var(--tl-color);
-    }
-
-    @media (max-width: 768px) {
-      .header-buttons {
-        margin-top: 10px;
-      }
-      .repeated-issue {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .issue-count {
-        margin-left: 0;
-        margin-top: 5px;
-      }
-      .tl-overview-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .dashboard-card {
-        padding: 30px 20px;
-      }
-    }
-
-    .nav-tabs .nav-link {
-      color: var(--primary-color);
-      font-weight: 500;
-    }
-
-    .nav-tabs .nav-link.active {
-      background-color: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
+    /* FORMS */
+    .form-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin: 2rem auto;
+      max-width: 1200px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
     }
 
     .form-label {
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+      font-size: 0.95rem;
+    }
+
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 2px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      transition: var(--transition);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(103, 58, 183, 0.25);
+      outline: none;
+    }
+
+    /* BUTTONS */
+    .btn {
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: var(--transition);
+      border: none;
     }
 
     .btn-primary {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
     }
 
     .btn-primary:hover {
-      background-color: #5a2d9c;
-      border-color: #5a2d9c;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
 
     .btn-tl {
-      background-color: var(--tl-color);
-      border-color: var(--tl-color);
+      background: linear-gradient(135deg, var(--tl-color), #1976D2);
       color: white;
     }
 
     .btn-tl:hover {
-      background-color: #1976D2;
-      border-color: #1976D2;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline-secondary {
+      border: 2px solid var(--border-color);
+      color: var(--text-color);
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: var(--border-color);
+      transform: translateY(-2px);
+    }
+
+    /* REPORT DISPLAY */
+    .report-container {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      white-space: pre-wrap;
+      border: 2px solid var(--border-color);
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      box-shadow: var(--shadow-sm);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .report-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .report-container::-webkit-scrollbar-track {
+      background: var(--bg-color);
+      border-radius: 4px;
+    }
+
+    .report-container::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+
+    /* SPECIAL SECTIONS */
+    .special-section {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid var(--primary-color);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .special-section:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-header {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .tl-section {
+      border-color: var(--tl-color);
+    }
+
+    .tl-section .section-header {
+      color: var(--tl-color);
+    }
+
+    /* TL OVERVIEW */
+    .repeated-issue {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 10px;
+      background: rgba(33, 150, 243, 0.1);
+      border-left: 4px solid var(--tl-color);
+      transition: var(--transition);
+    }
+
+    .repeated-issue:hover {
+      transform: translateX(5px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .repeated-issue.high {
+      background: rgba(255, 193, 7, 0.15);
+      border-left-color: var(--accent-color);
+    }
+
+    .repeated-issue.critical {
+      background: rgba(244, 67, 54, 0.15);
+      border-left-color: var(--danger-color);
+    }
+
+    .issue-category {
+      font-weight: 600;
+      flex: 1;
+      font-size: 1rem;
+    }
+
+    .issue-count {
+      background: var(--tl-color);
       color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      min-width: 50px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .issue-count.high {
+      background: var(--accent-color);
+    }
+
+    .issue-count.critical {
+      background: var(--danger-color);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* KEYWORDS */
+    .keyword-chip {
+      display: inline-block;
+      background: rgba(33, 150, 243, 0.15);
+      color: var(--tl-color);
+      padding: 0.35rem 0.75rem;
+      border-radius: 16px;
+      margin: 0.25rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid rgba(33, 150, 243, 0.3);
+      transition: var(--transition);
+    }
+
+    .keyword-chip:hover {
+      background: rgba(33, 150, 243, 0.25);
+      transform: scale(1.05);
+    }
+
+    /* BADGES */
+    .report-type-badge, .employee-badge {
+      position: absolute;
+      top: 15px;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .employee-badge {
+      left: 15px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+    }
+
+    .tl-badge {
+      background: linear-gradient(135deg, var(--tl-color), #1976D2);
+      color: white;
+    }
+
+    /* TOAST */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 9999;
+    }
+
+    .custom-toast {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--primary-color);
+      animation: slideInRight 0.3s ease-out;
+      min-width: 300px;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .custom-toast.success {
+      border-left-color: var(--secondary-color);
+    }
+
+    .custom-toast.error {
+      border-left-color: var(--danger-color);
+    }
+
+    /* ADMIN TABLE */
+    .admin-table {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .table {
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    .table thead {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+    }
+
+    .table tbody tr:hover {
+      background: rgba(103, 58, 183, 0.1);
+    }
+
+    /* LOADING SPINNER */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      margin-top: 3rem;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .dashboard-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .form-container {
+        padding: 1.5rem;
+      }
+
+      .option-card {
+        padding: 1.5rem;
+      }
+
+      .dashboard-title {
+        font-size: 1.5rem;
+      }
+
+      .option-title {
+        font-size: 1.25rem;
+      }
+
+      .repeated-issue {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .navbar-brand {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* UTILITY CLASSES */
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .slide-up {
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-color);
+      opacity: 0.6;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* TABS */
+    .nav-tabs {
+      border: none;
+      gap: 0.5rem;
+    }
+
+    .nav-tabs .nav-link {
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-color);
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      transition: var(--transition);
+    }
+
+    .nav-tabs .nav-link:hover {
+      background-color: rgba(103, 58, 183, 0.1);
+      border-color: var(--primary-color);
+    }
+
+    .nav-tabs .nav-link.active {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* STATS CARDS */
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      border: 2px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      opacity: 0.7;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
 
   <!-- Header -->
-  <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#" onclick="showDashboard()">
-        <i class="fas fa-file-alt me-2"></i>DailyReport Tool
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="#" onclick="showDashboard()">
+        <i class="fas fa-file-alt me-2"></i>Daily Report Tool
       </a>
-      <div class="d-flex">
-        <button class="btn btn-outline-light me-2" onclick="toggleTheme()">
-          <span id="theme-icon">🌓</span> Theme
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-light btn-sm" onclick="toggleTheme()" title="Toggle theme">
+          <i class="fas fa-moon" id="theme-icon"></i>
         </button>
-        <button class="btn btn-light" onclick="showAdminLogin()">
+        <button class="btn btn-light btn-sm" onclick="showAdminLogin()">
           <i class="fas fa-user-shield me-1"></i>Admin
         </button>
       </div>
@@ -429,18 +665,18 @@
 
   <!-- Notification -->
   <div class="notification" id="adminNotification">
-    <i class="fas fa-bell me-2"></i>Message: Usher out the old, and ring in the new! Happy 2026!
+    <i class="fas fa-bell me-2"></i>Usher out the old, and ring in the new! Happy 2026! 🎉
   </div>
 
   <!-- Dashboard -->
-  <div class="dashboard-container container py-5" id="dashboard">
-    <div class="dashboard-card">
+  <div class="dashboard-container" id="dashboard">
+    <div class="dashboard-card fade-in">
       <h1 class="dashboard-title">
         <i class="fas fa-tachometer-alt me-2"></i>Daily Report Dashboard
       </h1>
-      <p class="mb-4">Choose the type of report you want to generate:</p>
+      <p class="mb-4" style="font-size: 1.1rem; opacity: 0.8;">Choose the type of report you want to generate</p>
       
-      <div class="option-card" onclick="showEmployeeReport()">
+      <div class="option-card slide-up" onclick="showEmployeeReport()" style="animation-delay: 0.1s;">
         <div class="option-icon">
           <i class="fas fa-user-tie"></i>
         </div>
@@ -449,28 +685,28 @@
           For regular employees to report daily issues, physical support counts, and special tasks.
           Perfect for technicians and support staff.
         </p>
-        <div class="text-end">
-          <span class="badge bg-primary">Employee Report</span>
+        <div class="text-end mt-3">
+          <span class="badge bg-primary px-3 py-2">Employee Report</span>
         </div>
       </div>
       
-      <div class="option-card tl-option" onclick="showTLReport()">
+      <div class="option-card tl-option slide-up" onclick="showTLReport()" style="animation-delay: 0.2s;">
         <div class="option-icon">
           <i class="fas fa-user-check"></i>
         </div>
-        <h3 class="option-title">DailyReport for TL</h3>
+        <h3 class="option-title">Team Leader Report</h3>
         <p class="option-desc">
           For Team Leaders to generate comprehensive reports with issue categorization, 
           physical support tracking, and team overview.
         </p>
-        <div class="text-end">
-          <span class="badge" style="background-color: var(--tl-color);">Team Leader Report</span>
+        <div class="text-end mt-3">
+          <span class="badge tl-badge px-3 py-2">Team Leader Report</span>
         </div>
       </div>
       
-      <div class="mt-4 pt-3 border-top">
-        <small class="text-muted">
-          <i class="fas fa-info-circle me-1"></i>All reports are saved locally in your browser.
+      <div class="mt-4 pt-4 border-top">
+        <small style="opacity: 0.7;">
+          <i class="fas fa-info-circle me-1"></i>All reports are saved locally in your browser
         </small>
       </div>
     </div>
@@ -478,251 +714,275 @@
 
   <!-- Employee Report Form -->
   <main class="container py-4" id="employeeReport" style="display:none;">
-    <div class="position-relative">
-      <span class="employee-badge">Employee Report</span>
-      <button class="btn btn-outline-secondary back-to-dashboard" onclick="showDashboard()">
+    <div class="position-relative mb-4">
+      <span class="employee-badge"><i class="fas fa-user-tie me-2"></i>Employee Report</span>
+      <button class="btn btn-outline-secondary float-end" onclick="showDashboard()">
         <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
       </button>
     </div>
     
-    <h1 class="text-center mb-4 mt-3">Daily Issue Report Generator</h1>
+    <div class="form-container fade-in">
+      <h1 class="text-center mb-4" style="color: var(--primary-color);">
+        <i class="fas fa-clipboard-list me-2"></i>Daily Issue Report Generator
+      </h1>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="date" class="form-label">Date:</label>
-        <input type="date" class="form-control" id="date">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="date" class="form-label"><i class="fas fa-calendar me-2"></i>Date</label>
+          <input type="date" class="form-control" id="date">
+        </div>
+
+        <div class="col-md-6">
+          <label for="nameSelect" class="form-label"><i class="fas fa-user me-2"></i>Select Employee</label>
+          <select class="form-select" id="nameSelect" onchange="fillEmployeeDetails()">
+            <option value="">-- Select Employee --</option>
+            <option value="Sujan Tarafdar">Sujan Tarafdar</option>
+            <option value="Md Safikul Islam">Md Safikul Islam</option>
+            <option value="Sajid Hossain">Sajid Hossain</option>
+            <option value="Md. Shamsur Rahman">Md. Shamsur Rahman</option>
+            <option value="Md. Muhaimin Nabi">Md. Muhaimin Nabi</option>
+            <option value="Rony Bine">Rony Bine</option>
+            <option value="MD Shakib">MD Shakib</option>
+            <option value="GM Sakib">GM Sakib</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label for="employeeName" class="form-label"><i class="fas fa-id-card me-2"></i>Employee Name</label>
+          <input type="text" class="form-control" id="employeeName" placeholder="Enter name">
+        </div>
+
+        <div class="col-md-6">
+          <label for="employeeId" class="form-label"><i class="fas fa-hashtag me-2"></i>Employee ID</label>
+          <input type="text" class="form-control" id="employeeId" placeholder="Enter ID">
+        </div>
+
+        <div class="col-md-6">
+          <label for="dutyShift" class="form-label"><i class="fas fa-clock me-2"></i>Duty Shift</label>
+          <select class="form-select" id="dutyShift">
+            <option value="">-- Select Shift --</option>
+            <option value="Day">Day</option>
+            <option value="Evening">Evening</option>
+            <option value="Night">Night</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label for="issues" class="form-label"><i class="fas fa-list me-2"></i>List of Issues</label>
+          <textarea class="form-control" id="issues" rows="6" placeholder="Enter each issue on a new line"></textarea>
+          <small class="form-text" style="opacity: 0.7;">Tip: One issue per line for better organization</small>
+        </div>
       </div>
 
-      <div class="col-md-6 mb-3">
-        <label for="nameSelect" class="form-label">Employee Name:</label>
-        <select class="form-select" id="nameSelect" onchange="fillEmployeeDetails()">
-          <option value="">-- Select Employee --</option>
-          <option value="Sujan Tarafdar">Sujan Tarafdar</option>
-          <option value="Md Safikul Islam">Md Safikul Islam</option>
-          <option value="Sajid Hossain">Sajid Hossain</option>
-          <option value="Md. Shamsur Rahman">Md. Shamsur Rahman</option>
-          <option value="Md. Muhaimin Nabi">Md. Muhaimin Nabi</option>
-          <option value="Rony Bine">Rony Bine</option>
-          <option value="MD Shakib">MD Shakib</option>
-          <option value="GM Sakib">GM Sakib</option>
-        </select>
+      <!-- Physical Support Section -->
+      <div class="special-section mt-4">
+        <div class="section-header">
+          <i class="fas fa-hands-helping"></i>
+          Physical Support Count
+        </div>
+        <div class="row align-items-end">
+          <div class="col-md-3">
+            <input type="number" 
+                   class="form-control" 
+                   id="physicalSupport" 
+                   value="0" 
+                   min="0" 
+                   onchange="updatePhysicalSupport()">
+          </div>
+          <div class="col-md-9">
+            <small style="opacity: 0.7;">
+              Number of physical support tasks completed. This will be added to total issues and solved count.
+            </small>
+          </div>
+        </div>
+        <div id="physicalSupportPreview" class="mt-3"></div>
+      </div>
+
+      <!-- SS Number Counter Section -->
+      <div class="special-section">
+        <div class="section-header">
+          <i class="fas fa-list-ol"></i>
+          SS Number Counter (Processing Issues)
+        </div>
+        <textarea id="ssInput" class="form-control" rows="4" placeholder="Paste SS numbers or processing issues here (one per line)..."></textarea>
+        <small class="form-text mt-2" style="opacity: 0.7;">These will be counted as processing issues</small>
+      </div>
+
+      <!-- Special Task Section -->
+      <div class="special-section">
+        <div class="section-header">
+          <i class="fas fa-star"></i>
+          Special Task / Note
+        </div>
+        <textarea class="form-control" id="specialTask" rows="3" placeholder="Any special accomplishments or notes..."></textarea>
+      </div>
+
+      <div class="d-flex gap-3 justify-content-end mt-4">
+        <button class="btn btn-primary px-4" onclick="generateEmployeeReport()">
+          <i class="fas fa-file-alt me-2"></i>Generate Report
+        </button>
+        <button class="btn btn-secondary px-4" onclick="copyEmployeeReport()">
+          <i class="fas fa-copy me-2"></i>Copy Report
+        </button>
+      </div>
+
+      <h2 class="text-center mt-5 mb-3" style="color: var(--primary-color);">
+        <i class="fas fa-file-invoice me-2"></i>Generated Report
+      </h2>
+      <div class="report-container" id="employeeReportOutput">
+        <div class="empty-state">
+          <i class="fas fa-file-alt"></i>
+          <p>Your generated report will appear here</p>
+        </div>
       </div>
     </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="employeeName" class="form-label">Employee Name:</label>
-        <input type="text" class="form-control" id="employeeName" placeholder="Enter name">
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <label for="employeeId" class="form-label">Employee ID:</label>
-        <input type="text" class="form-control" id="employeeId" placeholder="Enter ID">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="dutyShift" class="form-label">Duty Shift:</label>
-        <select class="form-select" id="dutyShift">
-          <option value="">-- Select Shift --</option>
-          <option value="Day">Day</option>
-          <option value="Evening">Evening</option>
-          <option value="Night">Night</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label for="issues" class="form-label">List of Issues:</label>
-      <textarea class="form-control" id="issues" rows="5" placeholder="Enter each issue on a new line"></textarea>
-    </div>
-
-    <!-- Physical Support Section -->
-    <div class="physical-support-container">
-      <div class="physical-support-label">
-        <i class="fas fa-hands-helping me-2"></i>
-        <label for="physicalSupport">Physical Support Count:</label>
-      </div>
-      <div class="mb-3">
-        <input type="number" 
-               class="form-control physical-support-input" 
-               id="physicalSupport" 
-               value="0" 
-               min="0" 
-               onchange="updatePhysicalSupport()">
-        <small class="form-text text-muted">Enter the number of physical support tasks completed today. This will be automatically added to total issues and solved count.</small>
-      </div>
-      <div id="physicalSupportPreview" class="mt-2"></div>
-    </div>
-
-    <!-- SS Number Counter Section -->
-    <div class="ss-counter-container">
-      <h5 class="mb-3">
-        <i class="fas fa-list-ol me-2"></i>SS Number Counter (Processing Issues)
-      </h5>
-      <div class="mb-3">
-        <textarea id="ssInput" class="ss-textarea form-control" placeholder="Paste SS numbers or processing issues here (one per line)..."></textarea>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <div class="special-task-label">
-        <label for="specialTask" class="form-label">Special Task/Note:</label>
-      </div>
-      <textarea class="form-control" id="specialTask" rows="3" placeholder="Any special accomplishments or notes..."></textarea>
-    </div>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-      <button class="btn btn-primary me-md-2" onclick="generateEmployeeReport()">
-        <i class="fas fa-file-alt me-1"></i>Generate Report
-      </button>
-      <button class="btn btn-secondary" onclick="copyEmployeeReport()">
-        <i class="fas fa-copy me-1"></i>Copy Report
-      </button>
-    </div>
-
-    <h2 class="text-center mb-3">Generated Report</h2>
-    <pre class="report-container" id="employeeReportOutput"></pre>
   </main>
 
   <!-- TL Report Form -->
   <main class="container py-4" id="tlReport" style="display:none;">
-    <div class="position-relative">
-      <span class="employee-badge tl-badge">Team Leader Report</span>
-      <button class="btn btn-outline-secondary back-to-dashboard" onclick="showDashboard()">
+    <div class="position-relative mb-4">
+      <span class="employee-badge tl-badge"><i class="fas fa-user-check me-2"></i>Team Leader Report</span>
+      <button class="btn btn-outline-secondary float-end" onclick="showDashboard()">
         <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
       </button>
     </div>
     
-    <h1 class="text-center mb-4 mt-3">DailyReport for TL</h1>
+    <div class="form-container fade-in">
+      <h1 class="text-center mb-4" style="color: var(--tl-color);">
+        <i class="fas fa-chart-line me-2"></i>Team Leader Report
+      </h1>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="tlDate" class="form-label">Date:</label>
-        <input type="date" class="form-control" id="tlDate">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="tlDate" class="form-label"><i class="fas fa-calendar me-2"></i>Date</label>
+          <input type="date" class="form-control" id="tlDate">
+        </div>
+
+        <div class="col-md-6">
+          <label for="tlNameSelect" class="form-label"><i class="fas fa-user-tie me-2"></i>TL Name</label>
+          <select class="form-select" id="tlNameSelect">
+            <option value="">-- Select TL --</option>
+            <option value="Safikul Islam">Safikul Islam</option>
+            <option value="S.M Faisal">S.M Faisal</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label for="tlDutyShift" class="form-label"><i class="fas fa-clock me-2"></i>Report Shift</label>
+          <select class="form-select" id="tlDutyShift">
+            <option value="">-- Select Shift --</option>
+            <option value="Day (9:00AM to 6:30PM)">Day (9:00AM to 6:30PM)</option>
+            <option value="All Day (9:00AM to 9:00AM)">All Day (9:00AM to 9:00AM)</option>
+            <option value="Evening">Evening</option>
+            <option value="Night">Night</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label for="tlIssues" class="form-label"><i class="fas fa-list me-2"></i>List of Issues</label>
+          <textarea class="form-control" id="tlIssues" rows="6" placeholder="Enter each issue on a new line"></textarea>
+          <small class="form-text" style="opacity: 0.7;">Type your issues (one per line). TL Overview shows repeated issues (3+ times).</small>
+        </div>
       </div>
 
-      <div class="col-md-6 mb-3">
-        <label for="tlNameSelect" class="form-label">TL Name:</label>
-        <select class="form-select" id="tlNameSelect">
-          <option value="">-- Select TL --</option>
-          <option value="Safikul Islam">Safikul Islam</option>
-          <option value="S.M Faisal">S.M Faisal</option>
-        </select>
+      <!-- Processing Responsible Persons -->
+      <div class="special-section tl-section mt-4">
+        <div class="section-header">
+          <i class="fas fa-users"></i>
+          Processing Responsible Persons
+        </div>
+        <input type="text" class="form-control" id="processingPersons" value="Sakib + labib + Sujan">
+        <small class="form-text mt-2" style="opacity: 0.7;">Enter names of responsible persons for Soft & Sheet Processing (separate with +)</small>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="tlDutyShift" class="form-label">Report Shift:</label>
-        <select class="form-select" id="tlDutyShift">
-          <option value="">-- Select Shift --</option>
-          <option value="Day (9:00AM to 6:30PM)">Day (9:00AM to 6:30PM)</option>
-          <option value="All Day (9:00AM to 9:00AM)">All Day (9:00AM to 9:00AM)</option>
-          <option value="Evening">Evening</option>
-          <option value="Night">Night</option>
-        </select>
+      <!-- TL Overview Section -->
+      <div class="special-section tl-section">
+        <div class="section-header" style="justify-content: space-between;">
+          <span>
+            <i class="fas fa-chart-bar"></i>
+            TL Overview (Repeated Issues ≥ 3 times)
+          </span>
+          <span id="overviewBadge" class="badge bg-secondary px-3 py-2">0 repeated</span>
+        </div>
+        <div id="tlOverviewList"></div>
+        
+        <!-- Fixed Issues Keywords -->
+        <div class="mt-4 p-3" style="background: rgba(33, 150, 243, 0.05); border-radius: 8px; border-left: 4px solid var(--tl-color);">
+          <h6 class="mb-3"><i class="fas fa-tags me-2"></i>Fixed Issue Categories:</h6>
+          <div id="fixedIssuesKeywords"></div>
+        </div>
       </div>
-    </div>
 
-    <!-- Processing Responsible Persons -->
-    <div class="processing-persons-container">
-      <div class="processing-persons-header">
-        <i class="fas fa-users me-2"></i>
-        <span>Processing Responsible Persons</span>
-      </div>
-      <div class="mb-3">
-        <textarea class="form-control" id="processingPersons" rows="2" placeholder="Enter processing responsible person names">Sakib + labib + Sujan</textarea>
-        <small class="form-text text-muted">Enter names of responsible persons for Soft & Sheet Processing (separate with +)</small>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label for="tlIssues" class="form-label">List of Issues:</label>
-      <textarea class="form-control" id="tlIssues" rows="5" placeholder="Enter each issue on a new line"></textarea>
-      <small class="form-text text-muted">Type your issues (one per line). TL Overview shows repeated issues (3+ times).</small>
-    </div>
-
-    <!-- TL Overview Section -->
-    <div class="tl-overview-container">
-      <div class="tl-overview-header">
-        <span>
-          <i class="fas fa-chart-bar me-2"></i>TL Overview (Repeated Issues ≥ 3 times)
-        </span>
-        <span id="overviewBadge" class="overview-badge bg-secondary">0 repeated</span>
-      </div>
-      <div id="tlOverviewList"></div>
-      
-      <!-- Fixed Issues Keywords -->
-      <div class="fixed-issue-keywords">
-        <h6 class="mb-2"><i class="fas fa-tags me-1"></i>Fixed Issue Categories:</h6>
-        <div id="fixedIssuesKeywords"></div>
-      </div>
-    </div>
-
-    <!-- Physical Support Count Section -->
-    <div class="physical-support-container">
-      <div class="physical-support-label">
-        <i class="fas fa-tools me-2"></i>
-        <label for="physicalIssues">Physical Support Issues:</label>
-      </div>
-      <div class="mb-3">
-        <textarea class="form-control" id="physicalIssues" rows="5" placeholder="Enter physical support issues (one per line)
+      <!-- Physical Support Issues Section -->
+      <div class="special-section">
+        <div class="section-header">
+          <i class="fas fa-tools"></i>
+          Physical Support Issues
+        </div>
+        <textarea class="form-control" id="physicalIssues" rows="6" placeholder="Enter physical support issues (one per line)
 Examples:
 ONT replacement - done
 Fiber splicing - shift
 Router setup - cancel
 Cable checking
 LAN port - fixed"></textarea>
-        <small class="form-text text-muted">Enter physical support issues. System detects: done/complete/fixed/solved = Complete, shift/next day/pending = Shift, cancel = Cancel</small>
+        <small class="form-text mt-2" style="opacity: 0.7;">System detects: done/complete/fixed/solved = Complete, shift/next day/pending = Shift, cancel = Cancel</small>
+        
+        <div id="tlPhysicalSupportPreview" class="mt-3" style="display: none;">
+          <h6 class="mb-2"><i class="fas fa-clipboard-list me-2"></i>Physical Support Summary:</h6>
+          <div id="physicalCounts" class="row g-2"></div>
+        </div>
       </div>
-      <div id="tlPhysicalSupportPreview" class="physical-support-preview" style="display: none;">
-        <h6><i class="fas fa-clipboard-list me-1"></i>Physical Support Summary:</h6>
-        <div id="physicalCounts"></div>
+
+      <!-- SS Number Counter Section -->
+      <div class="special-section tl-section">
+        <div class="section-header">
+          <i class="fas fa-list-ol"></i>
+          SS Number Counter (Processing Issues)
+        </div>
+        <textarea id="tlSsInput" class="form-control" rows="4" placeholder="Paste SS numbers or processing issues here (one per line)..."></textarea>
+      </div>
+
+      <div class="d-flex gap-3 justify-content-end mt-4">
+        <button class="btn btn-tl px-4" id="generateTLReportBtn">
+          <i class="fas fa-file-alt me-2"></i>Generate TL Report
+        </button>
+        <button class="btn btn-secondary px-4" id="copyTLReportBtn">
+          <i class="fas fa-copy me-2"></i>Copy Report
+        </button>
+      </div>
+
+      <h2 class="text-center mt-5 mb-3" style="color: var(--tl-color);">
+        <i class="fas fa-file-invoice me-2"></i>Generated TL Report
+      </h2>
+      <div class="report-container" id="tlReportOutput">
+        <div class="empty-state">
+          <i class="fas fa-file-alt"></i>
+          <p>Your generated report will appear here</p>
+        </div>
       </div>
     </div>
-
-    <!-- SS Number Counter Section -->
-    <div class="ss-counter-container">
-      <h5 class="mb-3">
-        <i class="fas fa-list-ol me-2"></i>SS Number Counter (Processing Issues)
-      </h5>
-      <div class="mb-3">
-        <textarea id="tlSsInput" class="ss-textarea form-control" placeholder="Paste SS numbers or processing issues here (one per line)..."></textarea>
-      </div>
-    </div>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-      <button class="btn btn-tl me-md-2" id="generateTLReportBtn">
-        <i class="fas fa-file-alt me-1"></i>Generate TL Report
-      </button>
-      <button class="btn btn-secondary" id="copyTLReportBtn">
-        <i class="fas fa-copy me-1"></i>Copy Report
-      </button>
-    </div>
-
-    <h2 class="text-center mb-3">Generated TL Report</h2>
-    <pre class="report-container" id="tlReportOutput"></pre>
   </main>
 
   <!-- Admin Login -->
-  <div class="dashboard-container container py-4" id="loginForm" style="display:none;">
-    <div class="dashboard-card">
+  <div class="dashboard-container" id="loginForm" style="display:none;">
+    <div class="dashboard-card fade-in">
       <h1 class="dashboard-title">
         <i class="fas fa-user-shield me-2"></i>Admin Login
       </h1>
       <div class="mb-3">
-        <label for="adminUsername" class="form-label">Username:</label>
+        <label for="adminUsername" class="form-label">Username</label>
         <input type="text" class="form-control" id="adminUsername" value="admin">
       </div>
       <div class="mb-3">
-        <label for="adminPassword" class="form-label">Password:</label>
+        <label for="adminPassword" class="form-label">Password</label>
         <input type="password" class="form-control" id="adminPassword" value="admin123">
       </div>
       <div id="loginError" class="text-danger mb-3"></div>
       <div class="d-grid gap-2">
-        <button class="btn btn-primary" onclick="adminLogin()">Login</button>
+        <button class="btn btn-primary" onclick="adminLogin()">
+          <i class="fas fa-sign-in-alt me-2"></i>Login
+        </button>
         <button class="btn btn-outline-secondary" onclick="showDashboard()">Cancel</button>
       </div>
     </div>
@@ -730,120 +990,197 @@ LAN port - fixed"></textarea>
 
   <!-- Admin Panel -->
   <div class="container py-4" id="adminPanel" style="display:none;">
-    <div class="position-relative">
-      <button class="btn btn-outline-secondary mb-3" onclick="showDashboard()">
+    <div class="position-relative mb-4">
+      <button class="btn btn-outline-secondary" onclick="showDashboard()">
         <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+      </button>
+      <button class="btn btn-outline-danger float-end" onclick="logoutAdmin()">
+        <i class="fas fa-sign-out-alt me-1"></i>Logout
       </button>
     </div>
     
-    <h1 class="text-center mb-4">Admin Dashboard</h1>
+    <h1 class="text-center mb-4" style="color: var(--primary-color);">
+      <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+    </h1>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value" id="totalEmployeeReports">0</div>
+          <div class="stat-label">Employee Reports</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value" id="totalTLReports">0</div>
+          <div class="stat-label">TL Reports</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value" id="totalIssues">0</div>
+          <div class="stat-label">Total Issues</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value" id="totalSolved">0</div>
+          <div class="stat-label">Issues Solved</div>
+        </div>
+      </div>
+    </div>
     
-    <ul class="nav nav-tabs mb-3" id="adminTabs" role="tablist">
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee-reports" type="button" role="tab">Employee Reports</button>
+        <button class="nav-link active" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee-reports" type="button" role="tab">
+          <i class="fas fa-users me-2"></i>Employee Reports
+        </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tl-tab" data-bs-toggle="tab" data-bs-target="#tl-reports" type="button" role="tab">TL Reports</button>
+        <button class="nav-link" id="tl-tab" data-bs-toggle="tab" data-bs-target="#tl-reports" type="button" role="tab">
+          <i class="fas fa-user-check me-2"></i>TL Reports
+        </button>
       </li>
     </ul>
     
     <div class="tab-content">
       <div class="tab-pane fade show active" id="employee-reports" role="tabpanel">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Employee</th>
-                <th>Issues</th>
-                <th>Physical Support</th>
-                <th>Special Task</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="employeeReportsTable"></tbody>
-          </table>
+        <div class="admin-table">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th><i class="fas fa-calendar me-2"></i>Date</th>
+                  <th><i class="fas fa-user me-2"></i>Employee</th>
+                  <th><i class="fas fa-tasks me-2"></i>Issues</th>
+                  <th><i class="fas fa-hands-helping me-2"></i>Physical</th>
+                  <th><i class="fas fa-star me-2"></i>Special Task</th>
+                  <th><i class="fas fa-cog me-2"></i>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="employeeReportsTable"></tbody>
+            </table>
+          </div>
         </div>
       </div>
       
       <div class="tab-pane fade" id="tl-reports" role="tabpanel">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>TL Name</th>
-                <th>Issues</th>
-                <th>Physical</th>
-                <th>Processing</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="tlReportsTable"></tbody>
-          </table>
+        <div class="admin-table">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th><i class="fas fa-calendar me-2"></i>Date</th>
+                  <th><i class="fas fa-user-tie me-2"></i>TL Name</th>
+                  <th><i class="fas fa-tasks me-2"></i>Issues</th>
+                  <th><i class="fas fa-tools me-2"></i>Physical</th>
+                  <th><i class="fas fa-cog me-2"></i>Processing</th>
+                  <th><i class="fas fa-cog me-2"></i>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tlReportsTable"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="d-grid mt-3">
-      <button class="btn btn-outline-danger" onclick="logoutAdmin()">Logout</button>
     </div>
   </div>
 
   <!-- Footer -->
   <footer>
     <div class="container">
-      <p class="mb-0">Daily Report Tool © 2025 | Developed by Safikul Islam</p>
+      <p class="mb-2" style="font-size: 1.1rem; font-weight: 600;">Daily Report Tool</p>
+      <p class="mb-0" style="opacity: 0.8;">© 2025 | Developed with ❤️ by Safikul Islam</p>
     </div>
   </footer>
 
-  <!-- Toast Notification -->
-  <div class="toast align-items-center text-white bg-primary" id="toast">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>
-  </div>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     // ========================================
-    // GLOBAL VARIABLES
+    // APPLICATION STATE
     // ========================================
 
-    const employees = {
-      "Sujan Tarafdar": "Salt-S-063",
-      "Md Safikul Islam": "Salt-S-076",
-      "Sajid Hossain": "Salt-S-077",
-      "Md. Shamsur Rahman": "Salt-S-049",
-      "Md. Muhaimin Nabi": "Salt-S-094",
-      "Rony Bine": "Salt-S-096",
-      "MD Shakib": "Salt-S-080",
-      "GM Sakib": "Salt-S-087"
-    };
+    class AppState {
+      constructor() {
+        this.employees = {
+          "Sujan Tarafdar": "Salt-S-063",
+          "Md Safikul Islam": "Salt-S-076",
+          "Sajid Hossain": "Salt-S-077",
+          "Md. Shamsur Rahman": "Salt-S-049",
+          "Md. Muhaimin Nabi": "Salt-S-094",
+          "Rony Bine": "Salt-S-096",
+          "MD Shakib": "Salt-S-080",
+          "GM Sakib": "Salt-S-087"
+        };
 
-    const tlContacts = {
-      "Safikul Islam": {
-        email: "safikul@saltsync.com",
-        phone: "01901041903"
-      },
-      "S.M Faisal": {
-        email: "faisal@saltsync.com",
-        phone: "01901041901"
+        this.tlContacts = {
+          "Safikul Islam": {
+            email: "safikul@saltsync.com",
+            phone: "01901041903"
+          },
+          "S.M Faisal": {
+            email: "faisal@saltsync.com",
+            phone: "01901041901"
+          }
+        };
+
+        this.adminCredentials = {
+          username: "admin",
+          password: "admin123"
+        };
+
+        this.employeeReports = this.loadFromStorage('employeeReports') || [];
+        this.tlReports = this.loadFromStorage('tlReports') || [];
       }
-    };
 
-    let employeeReports = JSON.parse(localStorage.getItem('employeeReports')) || [];
-    let tlReports = JSON.parse(localStorage.getItem('tlReports')) || [];
-    
-    const adminCredentials = {
-      username: "admin",
-      password: "admin123"
-    };
+      loadFromStorage(key) {
+        try {
+          const data = localStorage.getItem(key);
+          return data ? JSON.parse(data) : null;
+        } catch (error) {
+          console.error(`Error loading ${key}:`, error);
+          return null;
+        }
+      }
+
+      saveToStorage(key, data) {
+        try {
+          localStorage.setItem(key, JSON.stringify(data));
+        } catch (error) {
+          console.error(`Error saving ${key}:`, error);
+        }
+      }
+
+      addEmployeeReport(report) {
+        this.employeeReports.push(report);
+        this.saveToStorage('employeeReports', this.employeeReports);
+      }
+
+      addTLReport(report) {
+        this.tlReports.push(report);
+        this.saveToStorage('tlReports', this.tlReports);
+      }
+
+      deleteEmployeeReport(timestamp) {
+        this.employeeReports = this.employeeReports.filter(r => r.timestamp !== timestamp);
+        this.saveToStorage('employeeReports', this.employeeReports);
+      }
+
+      deleteTLReport(timestamp) {
+        this.tlReports = this.tlReports.filter(r => r.timestamp !== timestamp);
+        this.saveToStorage('tlReports', this.tlReports);
+      }
+    }
+
+    const appState = new AppState();
 
     // ========================================
-    // TASK TYPE NORMALIZER (TL APPROVED)
+    // TASK TYPE NORMALIZER
     // ========================================
 
     class TaskTypeNormalizer {
@@ -902,103 +1239,123 @@ LAN port - fixed"></textarea>
     const normalizer = new TaskTypeNormalizer();
 
     // ========================================
-    // INITIALIZATION
+    // UI UTILITIES
     // ========================================
 
-    document.addEventListener('DOMContentLoaded', function () {
-      // Set current date for both forms
-      document.getElementById('date').valueAsDate = new Date();
-      document.getElementById('tlDate').valueAsDate = new Date();
-      
-      // Load theme preference
-      if (localStorage.getItem('darkMode') === 'true') {
-        document.documentElement.setAttribute('data-bs-theme', 'dark');
-        document.getElementById('theme-icon').textContent = '☀️';
+    class UIUtils {
+      static showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `custom-toast ${type} mb-2`;
+        
+        const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+        
+        toast.innerHTML = `
+          <div class="d-flex align-items-center">
+            <i class="fas fa-${icon} me-3" style="font-size: 1.5rem;"></i>
+            <div class="flex-grow-1">${message}</div>
+            <button type="button" class="btn-close ms-3" onclick="this.parentElement.parentElement.remove()"></button>
+          </div>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
       }
-      
-      // Setup event listeners
-      setupEventListeners();
-    });
+
+      static showElement(id) {
+        document.getElementById(id).style.display = 'block';
+      }
+
+      static hideElement(id) {
+        document.getElementById(id).style.display = 'none';
+      }
+
+      static showPage(pageId) {
+        const pages = ['dashboard', 'employeeReport', 'tlReport', 'loginForm', 'adminPanel'];
+        pages.forEach(id => {
+          const element = document.getElementById(id);
+          if (id === pageId) {
+            element.style.display = id === 'dashboard' ? 'flex' : 'block';
+            element.classList.add('fade-in');
+          } else {
+            element.style.display = 'none';
+          }
+        });
+      }
+
+      static setInputValue(id, value) {
+        const element = document.getElementById(id);
+        if (element) element.value = value;
+      }
+
+      static getInputValue(id) {
+        const element = document.getElementById(id);
+        return element ? element.value : '';
+      }
+    }
 
     // ========================================
-    // DASHBOARD FUNCTIONS
+    // NAVIGATION
     // ========================================
 
     function showDashboard() {
-      document.getElementById('dashboard').style.display = 'flex';
-      document.getElementById('employeeReport').style.display = 'none';
-      document.getElementById('tlReport').style.display = 'none';
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'none';
+      UIUtils.showPage('dashboard');
     }
 
     function showEmployeeReport() {
-      document.getElementById('dashboard').style.display = 'none';
-      document.getElementById('employeeReport').style.display = 'block';
-      document.getElementById('tlReport').style.display = 'none';
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'none';
-      
-      // Reset form
+      UIUtils.showPage('employeeReport');
       document.getElementById('date').valueAsDate = new Date();
-      document.getElementById('employeeReportOutput').textContent = '';
+      document.getElementById('employeeReportOutput').innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-file-alt"></i>
+          <p>Your generated report will appear here</p>
+        </div>
+      `;
     }
 
     function showTLReport() {
-      document.getElementById('dashboard').style.display = 'none';
-      document.getElementById('employeeReport').style.display = 'none';
-      document.getElementById('tlReport').style.display = 'block';
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'none';
-      
-      // Reset form
+      UIUtils.showPage('tlReport');
       document.getElementById('tlDate').valueAsDate = new Date();
-      document.getElementById('tlReportOutput').textContent = '';
-      
-      // Show fixed issues keywords
+      document.getElementById('tlReportOutput').innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-file-alt"></i>
+          <p>Your generated report will appear here</p>
+        </div>
+      `;
       showFixedIssuesKeywords();
       updateTLOverview();
       updateTLPhysicalSupportPreview();
     }
 
-    // ========================================
-    // EVENT LISTENERS SETUP
-    // ========================================
-
-    function setupEventListeners() {
-      // Employee report listeners
-      document.getElementById('issues').addEventListener('input', function() {
-        updatePhysicalSupport();
-      });
-      
-      // TL report listeners
-      document.getElementById('tlIssues').addEventListener('input', updateTLOverview);
-      document.getElementById('physicalIssues').addEventListener('input', updateTLPhysicalSupportPreview);
-      document.getElementById('generateTLReportBtn').addEventListener('click', generateTLReport);
-      document.getElementById('copyTLReportBtn').addEventListener('click', copyTLReport);
+    function showAdminLogin() {
+      UIUtils.showPage('loginForm');
     }
 
     // ========================================
-    // EMPLOYEE REPORT FUNCTIONS
+    // EMPLOYEE REPORT
     // ========================================
 
     function fillEmployeeDetails() {
-      const selectedName = document.getElementById('nameSelect').value;
-      if (selectedName && employees[selectedName]) {
-        document.getElementById('employeeName').value = selectedName;
-        document.getElementById('employeeId').value = employees[selectedName];
+      const selectedName = UIUtils.getInputValue('nameSelect');
+      if (selectedName && appState.employees[selectedName]) {
+        UIUtils.setInputValue('employeeName', selectedName);
+        UIUtils.setInputValue('employeeId', appState.employees[selectedName]);
       }
     }
 
     function updatePhysicalSupport() {
-      const physicalSupport = parseInt(document.getElementById('physicalSupport').value) || 0;
+      const physicalSupport = parseInt(UIUtils.getInputValue('physicalSupport')) || 0;
       const previewElement = document.getElementById('physicalSupportPreview');
       
       if (physicalSupport > 0) {
         previewElement.innerHTML = `
-          <div class="alert alert-info p-2">
-            <strong>Note:</strong> Physical Support will add ${physicalSupport} to:
-            <ul class="mb-0 mt-1">
+          <div class="alert alert-info mt-3">
+            <strong><i class="fas fa-info-circle me-2"></i>Note:</strong> Physical Support will add ${physicalSupport} to:
+            <ul class="mb-0 mt-2">
               <li>Total Issues Received: +${physicalSupport}</li>
               <li>Total Issues Solved: +${physicalSupport} (auto-completed)</li>
             </ul>
@@ -1010,32 +1367,32 @@ LAN port - fixed"></textarea>
     }
 
     function generateEmployeeReport() {
-      const date = document.getElementById('date').value;
-      const name = document.getElementById('employeeName').value.trim();
-      const id = document.getElementById('employeeId').value.trim();
-      const shift = document.getElementById('dutyShift').value;
-      const issues = document.getElementById('issues').value.trim().split('\n').filter(line => line.trim());
-      const specialTask = document.getElementById('specialTask').value.trim();
-      const physicalSupport = parseInt(document.getElementById('physicalSupport').value) || 0;
+      const date = UIUtils.getInputValue('date');
+      const name = UIUtils.getInputValue('employeeName').trim();
+      const id = UIUtils.getInputValue('employeeId').trim();
+      const shift = UIUtils.getInputValue('dutyShift');
+      const issues = UIUtils.getInputValue('issues').trim().split('\n').filter(line => line.trim());
+      const specialTask = UIUtils.getInputValue('specialTask').trim();
+      const physicalSupport = parseInt(UIUtils.getInputValue('physicalSupport')) || 0;
 
-      const ssInput = document.getElementById('ssInput').value.trim();
+      const ssInput = UIUtils.getInputValue('ssInput').trim();
       const processingIssues = ssInput.split(/\r?\n/)
-                                      .map(item => item.replace(/"/g, "").trim())
-                                      .filter(item => item.length > 0);
+        .map(item => item.replace(/"/g, "").trim())
+        .filter(item => item.length > 0);
 
       // Validation
       if (!shift) {
-        showToast('Please select a duty shift!', 'danger');
+        UIUtils.showToast('Please select a duty shift!', 'error');
         return;
       }
 
       if (!name || !id) {
-        showToast('Please fill employee name and ID!', 'danger');
+        UIUtils.showToast('Please fill employee name and ID!', 'error');
         return;
       }
 
       if (issues.length === 0 && physicalSupport === 0) {
-        showToast('Please enter at least one issue or physical support count!', 'danger');
+        UIUtils.showToast('Please enter at least one issue or physical support count!', 'error');
         return;
       }
 
@@ -1110,25 +1467,23 @@ LAN port - fixed"></textarea>
         timestamp: new Date().toISOString()
       };
 
-      employeeReports.push(reportData);
-      localStorage.setItem('employeeReports', JSON.stringify(employeeReports));
-
-      showToast('Employee report generated successfully!');
+      appState.addEmployeeReport(reportData);
+      UIUtils.showToast('Employee report generated successfully!');
     }
 
     function copyEmployeeReport() {
       const reportText = document.getElementById('employeeReportOutput').textContent;
-      if (reportText) {
+      if (reportText && !reportText.includes('Your generated report')) {
         navigator.clipboard.writeText(reportText)
-          .then(() => showToast('Report copied to clipboard!'))
-          .catch(() => showToast('Failed to copy!', 'danger'));
+          .then(() => UIUtils.showToast('Report copied to clipboard!'))
+          .catch(() => UIUtils.showToast('Failed to copy!', 'error'));
       } else {
-        showToast('No report to copy!', 'danger');
+        UIUtils.showToast('No report to copy!', 'error');
       }
     }
 
     // ========================================
-    // TL REPORT FUNCTIONS
+    // TL REPORT
     // ========================================
 
     function showFixedIssuesKeywords() {
@@ -1136,7 +1491,7 @@ LAN port - fixed"></textarea>
       let html = '';
       
       for (const [category, keywords] of Object.entries(normalizer.fixedIssues)) {
-        html += `<div class="mb-2"><strong>${category}:</strong> `;
+        html += `<div class="mb-2"><strong>${category}:</strong><br>`;
         keywords.forEach(keyword => {
           html += `<span class="keyword-chip">${keyword}</span> `;
         });
@@ -1147,7 +1502,7 @@ LAN port - fixed"></textarea>
     }
 
     function updateTLOverview() {
-      const issuesText = document.getElementById('tlIssues').value;
+      const issuesText = UIUtils.getInputValue('tlIssues');
       const issuesArray = issuesText.split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0);
@@ -1165,16 +1520,21 @@ LAN port - fixed"></textarea>
 
       if (repeatedCount > 0) {
         overviewBadge.textContent = `${repeatedCount} repeated`;
-        overviewBadge.className = 'overview-badge ' + (repeatedCount > 5 ? 'bg-danger' : 'bg-success');
+        overviewBadge.className = 'badge px-3 py-2 ' + (repeatedCount > 5 ? 'bg-danger' : 'bg-success');
       } else {
         overviewBadge.textContent = '0 repeated';
-        overviewBadge.className = 'overview-badge bg-secondary';
+        overviewBadge.className = 'badge bg-secondary px-3 py-2';
       }
 
       tlOverviewList.innerHTML = '';
       
       if (repeatedCount === 0) {
-        tlOverviewList.innerHTML = '<div class="empty-message">No repeated issues (need ≥ 3 occurrences of same type)</div>';
+        tlOverviewList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <p>No repeated issues (need ≥ 3 occurrences of same type)</p>
+          </div>
+        `;
         return;
       }
 
@@ -1203,7 +1563,7 @@ LAN port - fixed"></textarea>
     }
 
     function updateTLPhysicalSupportPreview() {
-      const text = document.getElementById('physicalIssues').value;
+      const text = UIUtils.getInputValue('physicalIssues');
       const list = text.split('\n')
         .map(l => l.trim())
         .filter(l => l.length > 0);
@@ -1233,27 +1593,47 @@ LAN port - fixed"></textarea>
       });
 
       box.innerHTML = `
-        <p><strong>Total Physical:</strong> ${total}</p>
-        <p><strong>Complete:</strong> ${complete}</p>
-        <p><strong>Shift:</strong> ${shift}</p>
-        <p><strong>Cancel:</strong> ${cancel}</p>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-value" style="font-size: 2rem;">${total}</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-value" style="font-size: 2rem; color: var(--secondary-color);">${complete}</div>
+            <div class="stat-label">Complete</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-value" style="font-size: 2rem; color: var(--accent-color);">${shift}</div>
+            <div class="stat-label">Shift</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-value" style="font-size: 2rem; color: var(--danger-color);">${cancel}</div>
+            <div class="stat-label">Cancel</div>
+          </div>
+        </div>
       `;
 
       preview.style.display = 'block';
     }
 
     function generateTLReport() {
-      const date = document.getElementById('tlDate').value;
-      const tlName = document.getElementById('tlNameSelect').value;
-      const shift = document.getElementById('tlDutyShift').value;
-      const issues = document.getElementById('tlIssues').value.trim().split('\n').filter(line => line.trim());
-      const physicalIssues = document.getElementById('physicalIssues').value.trim().split('\n').filter(line => line.trim());
-      const processingPersons = document.getElementById('processingPersons').value.trim() || "Sakib + labib + Sujan";
+      const date = UIUtils.getInputValue('tlDate');
+      const tlName = UIUtils.getInputValue('tlNameSelect');
+      const shift = UIUtils.getInputValue('tlDutyShift');
+      const issues = UIUtils.getInputValue('tlIssues').trim().split('\n').filter(line => line.trim());
+      const physicalIssues = UIUtils.getInputValue('physicalIssues').trim().split('\n').filter(line => line.trim());
+      const processingPersons = UIUtils.getInputValue('processingPersons').trim() || "Sakib + labib + Sujan";
 
-      const ssInput = document.getElementById('tlSsInput').value.trim();
+      const ssInput = UIUtils.getInputValue('tlSsInput').trim();
       const processingIssues = ssInput.split(/\r?\n/)
-                                      .map(item => item.replace(/"/g, "").trim())
-                                      .filter(item => item.length > 0);
+        .map(item => item.replace(/"/g, "").trim())
+        .filter(item => item.length > 0);
 
       let completeCount = 0;
       let shiftCount = 0;
@@ -1274,12 +1654,12 @@ LAN port - fixed"></textarea>
 
       // Validation
       if (!shift) {
-        showToast('Please select report shift!', 'danger');
+        UIUtils.showToast('Please select report shift!', 'error');
         return;
       }
 
       if (!tlName) {
-        showToast('Please select TL name!', 'danger');
+        UIUtils.showToast('Please select TL name!', 'error');
         return;
       }
 
@@ -1405,77 +1785,35 @@ LAN port - fixed"></textarea>
         timestamp: new Date().toISOString()
       };
 
-      tlReports.push(reportData);
-      localStorage.setItem('tlReports', JSON.stringify(tlReports));
-
-      showToast('TL Report generated successfully!');
+      appState.addTLReport(reportData);
+      UIUtils.showToast('TL Report generated successfully!');
     }
 
     function copyTLReport() {
       const reportText = document.getElementById('tlReportOutput').textContent;
-      if (reportText) {
+      if (reportText && !reportText.includes('Your generated report')) {
         navigator.clipboard.writeText(reportText)
-          .then(() => showToast('TL Report copied to clipboard!'))
-          .catch(() => showToast('Failed to copy!', 'danger'));
+          .then(() => UIUtils.showToast('TL Report copied to clipboard!'))
+          .catch(() => UIUtils.showToast('Failed to copy!', 'error'));
       } else {
-        showToast('No report to copy!', 'danger');
+        UIUtils.showToast('No report to copy!', 'error');
       }
     }
 
     // ========================================
-    // COMMON FUNCTIONS
+    // ADMIN
     // ========================================
-
-    function toggleTheme() {
-      const htmlElement = document.documentElement;
-      const isDark = htmlElement.getAttribute('data-bs-theme') === 'dark';
-
-      if (isDark) {
-        htmlElement.removeAttribute('data-bs-theme');
-        document.getElementById('theme-icon').textContent = '🌓';
-        localStorage.setItem('darkMode', 'false');
-      } else {
-        htmlElement.setAttribute('data-bs-theme', 'dark');
-        document.getElementById('theme-icon').textContent = '☀️';
-        localStorage.setItem('darkMode', 'true');
-      }
-    }
-
-    function showToast(message, type = 'primary') {
-      const toastEl = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
-      toastMessage.textContent = message;
-      toastEl.className = `toast align-items-center text-white bg-${type} show`;
-      setTimeout(() => {
-        toastEl.classList.remove('show');
-      }, 3000);
-    }
-
-    // ========================================
-    // ADMIN FUNCTIONS
-    // ========================================
-
-    function showAdminLogin() {
-      document.getElementById('dashboard').style.display = 'none';
-      document.getElementById('employeeReport').style.display = 'none';
-      document.getElementById('tlReport').style.display = 'none';
-      document.getElementById('loginForm').style.display = 'flex';
-      document.getElementById('adminPanel').style.display = 'none';
-    }
 
     function adminLogin() {
-      const username = document.getElementById('adminUsername').value;
-      const password = document.getElementById('adminPassword').value;
+      const username = UIUtils.getInputValue('adminUsername');
+      const password = UIUtils.getInputValue('adminPassword');
 
-      if (username === adminCredentials.username && password === adminCredentials.password) {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('dashboard').style.display = 'none';
-        document.getElementById('employeeReport').style.display = 'none';
-        document.getElementById('tlReport').style.display = 'none';
+      if (username === appState.adminCredentials.username && password === appState.adminCredentials.password) {
+        UIUtils.showPage('adminPanel');
         document.getElementById('loginError').textContent = '';
         loadAdminTables();
-        showToast('Admin login successful!');
+        updateAdminStats();
+        UIUtils.showToast('Admin login successful!');
       } else {
         document.getElementById('loginError').textContent = 'Invalid username or password';
       }
@@ -1483,7 +1821,28 @@ LAN port - fixed"></textarea>
 
     function logoutAdmin() {
       showDashboard();
-      showToast('Logged out successfully');
+      UIUtils.showToast('Logged out successfully');
+    }
+
+    function updateAdminStats() {
+      document.getElementById('totalEmployeeReports').textContent = appState.employeeReports.length;
+      document.getElementById('totalTLReports').textContent = appState.tlReports.length;
+      
+      let totalIssues = 0;
+      let totalSolved = 0;
+      
+      appState.employeeReports.forEach(report => {
+        totalIssues += report.issues || 0;
+        totalSolved += report.solved || 0;
+      });
+      
+      appState.tlReports.forEach(report => {
+        totalIssues += report.issues || 0;
+        totalSolved += report.solved || 0;
+      });
+      
+      document.getElementById('totalIssues').textContent = totalIssues;
+      document.getElementById('totalSolved').textContent = totalSolved;
     }
 
     function loadAdminTables() {
@@ -1491,45 +1850,85 @@ LAN port - fixed"></textarea>
       const employeeTable = document.getElementById('employeeReportsTable');
       employeeTable.innerHTML = '';
 
-      employeeReports.forEach(report => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${report.date}</td>
-          <td>${report.name} (${report.id})</td>
-          <td>${report.issues} ${report.physicalSupport > 0 ? `(${report.regularIssues} + ${report.physicalSupport} physical)` : ''}</td>
-          <td>${report.physicalSupport > 0 ? `${report.physicalSupport} ✓` : '-'}</td>
-          <td>${report.specialTask || '-'}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-primary" onclick="viewEmployeeReport('${report.timestamp}')">View</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployeeReport('${report.timestamp}')">Delete</button>
-          </td>
+      if (appState.employeeReports.length === 0) {
+        employeeTable.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No employee reports yet</p>
+              </div>
+            </td>
+          </tr>
         `;
-        employeeTable.appendChild(row);
-      });
+      } else {
+        appState.employeeReports.forEach(report => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${report.date}</td>
+            <td><strong>${report.name}</strong><br><small class="text-muted">${report.id}</small></td>
+            <td>
+              <span class="badge bg-primary">${report.issues}</span>
+              ${report.physicalSupport > 0 ? `<br><small>(${report.regularIssues} + ${report.physicalSupport} physical)</small>` : ''}
+            </td>
+            <td>${report.physicalSupport > 0 ? `<span class="badge bg-success">${report.physicalSupport} ✓</span>` : '-'}</td>
+            <td>${report.specialTask ? '<i class="fas fa-star text-warning"></i>' : '-'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployeeReport('${report.timestamp}')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployeeReport('${report.timestamp}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          `;
+          employeeTable.appendChild(row);
+        });
+      }
 
       // Load TL reports
       const tlTable = document.getElementById('tlReportsTable');
       tlTable.innerHTML = '';
 
-      tlReports.forEach(report => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${report.date}</td>
-          <td>${report.tlName}</td>
-          <td>${report.issues} (${report.solved} solved)</td>
-          <td>${report.physicalTotal || 0}</td>
-          <td>${report.processing || 0}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-primary" onclick="viewTLReport('${report.timestamp}')">View</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteTLReport('${report.timestamp}')">Delete</button>
-          </td>
+      if (appState.tlReports.length === 0) {
+        tlTable.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No TL reports yet</p>
+              </div>
+            </td>
+          </tr>
         `;
-        tlTable.appendChild(row);
-      });
+      } else {
+        appState.tlReports.forEach(report => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${report.date}</td>
+            <td><strong>${report.tlName}</strong></td>
+            <td>
+              <span class="badge bg-primary">${report.issues}</span>
+              <br><small>(${report.solved} solved)</small>
+            </td>
+            <td><span class="badge bg-info">${report.physicalTotal || 0}</span></td>
+            <td><span class="badge bg-warning">${report.processing || 0}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" onclick="viewTLReport('${report.timestamp}')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteTLReport('${report.timestamp}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          `;
+          tlTable.appendChild(row);
+        });
+      }
     }
 
     function viewEmployeeReport(timestamp) {
-      const report = employeeReports.find(r => r.timestamp === timestamp);
+      const report = appState.employeeReports.find(r => r.timestamp === timestamp);
       if (report) {
         alert(report.reportContent);
       }
@@ -1537,15 +1936,15 @@ LAN port - fixed"></textarea>
 
     function deleteEmployeeReport(timestamp) {
       if (confirm('Are you sure you want to delete this employee report?')) {
-        employeeReports = employeeReports.filter(r => r.timestamp !== timestamp);
-        localStorage.setItem('employeeReports', JSON.stringify(employeeReports));
+        appState.deleteEmployeeReport(timestamp);
         loadAdminTables();
-        showToast('Employee report deleted successfully!');
+        updateAdminStats();
+        UIUtils.showToast('Employee report deleted successfully!');
       }
     }
 
     function viewTLReport(timestamp) {
-      const report = tlReports.find(r => r.timestamp === timestamp);
+      const report = appState.tlReports.find(r => r.timestamp === timestamp);
       if (report) {
         alert(report.reportContent);
       }
@@ -1553,29 +1952,55 @@ LAN port - fixed"></textarea>
 
     function deleteTLReport(timestamp) {
       if (confirm('Are you sure you want to delete this TL report?')) {
-        tlReports = tlReports.filter(r => r.timestamp !== timestamp);
-        localStorage.setItem('tlReports', JSON.stringify(tlReports));
+        appState.deleteTLReport(timestamp);
         loadAdminTables();
-        showToast('TL report deleted successfully!');
+        updateAdminStats();
+        UIUtils.showToast('TL report deleted successfully!');
       }
     }
 
-    // Make functions globally available
-    window.showDashboard = showDashboard;
-    window.showEmployeeReport = showEmployeeReport;
-    window.showTLReport = showTLReport;
-    window.showAdminLogin = showAdminLogin;
-    window.fillEmployeeDetails = fillEmployeeDetails;
-    window.updatePhysicalSupport = updatePhysicalSupport;
-    window.generateEmployeeReport = generateEmployeeReport;
-    window.copyEmployeeReport = copyEmployeeReport;
-    window.toggleTheme = toggleTheme;
-    window.adminLogin = adminLogin;
-    window.logoutAdmin = logoutAdmin;
-    window.viewEmployeeReport = viewEmployeeReport;
-    window.deleteEmployeeReport = deleteEmployeeReport;
-    window.viewTLReport = viewTLReport;
-    window.deleteTLReport = deleteTLReport;
+    // ========================================
+    // THEME
+    // ========================================
+
+    function toggleTheme() {
+      const htmlElement = document.documentElement;
+      const isDark = htmlElement.getAttribute('data-bs-theme') === 'dark';
+      const icon = document.getElementById('theme-icon');
+
+      if (isDark) {
+        htmlElement.removeAttribute('data-bs-theme');
+        icon.className = 'fas fa-moon';
+        localStorage.setItem('darkMode', 'false');
+      } else {
+        htmlElement.setAttribute('data-bs-theme', 'dark');
+        icon.className = 'fas fa-sun';
+        localStorage.setItem('darkMode', 'true');
+      }
+    }
+
+    // ========================================
+    // INITIALIZATION
+    // ========================================
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Set current date
+      document.getElementById('date').valueAsDate = new Date();
+      document.getElementById('tlDate').valueAsDate = new Date();
+      
+      // Load theme preference
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        document.getElementById('theme-icon').className = 'fas fa-sun';
+      }
+      
+      // Setup event listeners
+      document.getElementById('issues').addEventListener('input', updatePhysicalSupport);
+      document.getElementById('tlIssues').addEventListener('input', updateTLOverview);
+      document.getElementById('physicalIssues').addEventListener('input', updateTLPhysicalSupportPreview);
+      document.getElementById('generateTLReportBtn').addEventListener('click', generateTLReport);
+      document.getElementById('copyTLReportBtn').addEventListener('click', copyTLReport);
+    });
   </script>
 </body>
 </html>
