@@ -4,651 +4,665 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SaltSync Report Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
+/* ══════════════════════════════════════
+   DESIGN SYSTEM
+══════════════════════════════════════ */
 :root{
-  --ink:#0d0d14;--ink2:#1a1a28;--ink3:#252538;
-  --surf:#f5f4ff;--surf2:#eeedf9;--surf3:#e5e3f5;
-  --accent:#6c47ff;--accent2:#8b6aff;--accent3:#b09aff;
-  --tl:#00c2a8;--tl2:#00e5c8;
-  --gold:#f5a623;--red:#ff4466;--green:#00c87a;
-  --white:#fff;--muted:#9090b0;
-  --r:14px;--r2:20px;--r3:28px;
-  --sh:0 4px 24px rgba(108,71,255,.13);
-  --sh2:0 8px 40px rgba(108,71,255,.18);
-  --tr:.22s cubic-bezier(.4,0,.2,1);
+  --P:#5c35e8;--P2:#7b5cf0;--P3:#a98ef7;
+  --T:#00b89c;--T2:#00d4b4;
+  --G:#22c55e;--R:#ef4444;--Y:#f59e0b;
+  --ink:#0f0e17;--ink2:#2d2b45;--ink3:#6b6a82;
+  --bg:#f7f6ff;--bg2:#eeecfd;--bg3:#e4e1fc;
+  --card:#ffffff;--border:#dddaf7;
+  --sh:0 2px 16px rgba(92,53,232,.10);
+  --sh2:0 6px 32px rgba(92,53,232,.18);
+  --tr:.2s cubic-bezier(.4,0,.2,1);
+  --r:12px;--r2:18px;--r3:26px;
 }
-[data-theme="dark"]{
-  --ink:#f0efff;--ink2:#d0cfee;--ink3:#b0afcc;
-  --surf:#0f0f1c;--surf2:#16162a;--surf3:#1e1e38;
-  --sh:0 4px 24px rgba(0,0,0,.4);--sh2:0 8px 40px rgba(0,0,0,.5);
+[data-dark]{
+  --ink:#f0eeff;--ink2:#c8c4f0;--ink3:#8886aa;
+  --bg:#0d0c1a;--bg2:#13122a;--bg3:#1b193a;
+  --card:#181630;--border:#2a2848;
+  --sh:0 2px 16px rgba(0,0,0,.4);--sh2:0 6px 32px rgba(0,0,0,.5);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--surf);color:var(--ink);min-height:100vh;transition:background var(--tr),color var(--tr);overflow-x:hidden}
-h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;transition:background var(--tr),color var(--tr)}
+h1,h2,h3,h4,h5,h6{font-family:'Syne',sans-serif}
+input,select,textarea,button{font-family:'DM Sans',sans-serif}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--P3);border-radius:99px}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--surf2)}
-::-webkit-scrollbar-thumb{background:var(--accent3);border-radius:99px}
-
-/* ── LOADER SCREEN ── */
-#bootScreen{position:fixed;inset:0;background:var(--ink2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
-.boot-logo{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:1.5rem}
-.boot-logo span{color:var(--accent2)}
-.boot-bar{width:220px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
-.boot-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--tl));border-radius:99px;animation:bootFill 1.4s ease forwards}
-@keyframes bootFill{from{width:0}to{width:100%}}
-.boot-txt{margin-top:1rem;color:rgba(255,255,255,.5);font-size:.85rem}
+/* ── BOOT ── */
+#boot{position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
+.boot-brand{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:#fff;letter-spacing:-1px}
+.boot-brand b{color:var(--P3)}
+.boot-track{width:200px;height:3px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin:1.2rem 0 .8rem}
+.boot-bar{height:100%;background:linear-gradient(90deg,var(--P),var(--T));border-radius:99px;animation:bfill 1.6s ease forwards}
+@keyframes bfill{from{width:0}to{width:100%}}
+.boot-status{color:rgba(255,255,255,.45);font-size:.82rem}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;height:60px;background:var(--surf);border-bottom:1.5px solid var(--surf3);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;z-index:100;box-shadow:var(--sh)}
-.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;color:var(--ink);text-decoration:none;flex:1}
-.nav-brand span{color:var(--accent)}
-.nav-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:99px;font-size:.78rem;font-weight:600;border:1.5px solid var(--surf3);color:var(--muted);transition:var(--tr)}
-.nav-pill.connected{border-color:var(--green);color:var(--green);background:rgba(0,200,122,.08)}
-.nav-pill.error{border-color:var(--red);color:var(--red);background:rgba(255,68,102,.08)}
-.nav-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.nav-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:99px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:var(--tr)}
-.btn-ghost{background:transparent;border:1.5px solid var(--surf3);color:var(--ink)}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:rgba(108,71,255,.06)}
-.btn-accent{background:var(--accent);color:#fff;box-shadow:var(--sh)}
-.btn-accent:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:var(--sh2)}
-.btn-tl{background:var(--tl);color:#fff;box-shadow:0 4px 20px rgba(0,194,168,.25)}
-.btn-tl:hover{background:var(--tl2);transform:translateY(-1px)}
-.btn-danger{background:var(--red);color:#fff}
-.btn-danger:hover{opacity:.85;transform:translateY(-1px)}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{opacity:.85;transform:translateY(-1px)}
+nav{position:fixed;top:0;inset-x:0;height:58px;background:var(--card);border-bottom:1.5px solid var(--border);display:flex;align-items:center;padding:0 1.4rem;gap:.75rem;z-index:200;box-shadow:var(--sh)}
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;text-decoration:none;color:var(--ink);flex:1}
+.brand b{color:var(--P)}
+.status-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.28rem .75rem;border-radius:99px;font-size:.75rem;font-weight:600;border:1.5px solid var(--border);color:var(--ink3);transition:var(--tr)}
+.status-pill.ok{border-color:var(--G);color:var(--G);background:rgba(34,197,94,.08)}
+.status-pill.err{border-color:var(--R);color:var(--R);background:rgba(239,68,68,.08)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.15rem;border-radius:99px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:var(--tr);white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn-p{background:var(--P);color:#fff;box-shadow:0 4px 18px rgba(92,53,232,.3)}
+.btn-p:hover{background:var(--P2);box-shadow:var(--sh2)}
+.btn-t{background:var(--T);color:#fff;box-shadow:0 4px 18px rgba(0,184,156,.25)}
+.btn-t:hover{background:var(--T2)}
+.btn-g{background:var(--G);color:#fff}
+.btn-g:hover{opacity:.9}
+.btn-r{background:var(--R);color:#fff}
+.btn-r:hover{opacity:.9}
+.btn-y{background:var(--Y);color:#fff}
+.btn-y:hover{opacity:.9}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--P);color:var(--P);background:rgba(92,53,232,.05)}
+.btn-sm{padding:.35rem .8rem;font-size:.78rem}
+.btn-full{width:100%;justify-content:center;padding:.8rem}
 
 /* ── NOTIF BANNER ── */
-#notifBanner{margin-top:60px;background:linear-gradient(90deg,var(--accent),var(--tl));color:#fff;text-align:center;padding:10px 1rem;font-size:.88rem;font-weight:500;letter-spacing:.2px}
+#notifBar{margin-top:58px;padding:9px 1rem;background:linear-gradient(90deg,var(--P),var(--T));color:#fff;text-align:center;font-size:.83rem;font-weight:500;letter-spacing:.1px}
 
 /* ── PAGE SYSTEM ── */
-.page{display:none;min-height:calc(100vh - 100px);padding:2rem 1rem 4rem}
-.page.active{display:block;animation:pageIn .4s ease}
-@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.center-page{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 100px)}
+.page{display:none;min-height:calc(100vh - 100px);padding:1.5rem 1rem 5rem}
+.page.on{display:block;animation:pin .35s ease}
+.fcenter{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 100px)}
+@keyframes pin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.wrap{max-width:1080px;margin:0 auto}
+.wrap-sm{max-width:480px;margin:0 auto}
+.wrap-md{max-width:700px;margin:0 auto}
 
-/* ── CARDS ── */
-.card{background:var(--surf2);border:1.5px solid var(--surf3);border-radius:var(--r2);padding:2rem;box-shadow:var(--sh);transition:var(--tr)}
+/* ── CARD ── */
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:1.75rem;box-shadow:var(--sh);transition:box-shadow var(--tr)}
 .card:hover{box-shadow:var(--sh2)}
-.card-sm{padding:1.25rem 1.5rem;border-radius:var(--r)}
-.card-glass{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,.1)}
+.card-flat{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:1.5rem}
+.card-sm{padding:1.1rem 1.3rem;border-radius:var(--r)}
 
 /* ── DASHBOARD ── */
-.dash-hero{max-width:660px;margin:0 auto;text-align:center;padding:3rem 1.5rem}
-.dash-title{font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;line-height:1.15;margin-bottom:1rem}
-.dash-title .grad{background:linear-gradient(135deg,var(--accent),var(--tl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.dash-sub{color:var(--muted);font-size:1.05rem;margin-bottom:2.5rem}
-.dash-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:560px;margin:0 auto}
-.dash-opt{background:var(--surf2);border:2px solid var(--surf3);border-radius:var(--r2);padding:2rem 1.5rem;cursor:pointer;transition:var(--tr);text-align:left;position:relative;overflow:hidden}
-.dash-opt::after{content:'';position:absolute;inset:0;background:var(--accent);opacity:0;transition:opacity .3s}
-.dash-opt:hover{border-color:var(--accent);transform:translateY(-5px);box-shadow:var(--sh2)}
-.dash-opt:hover .opt-arrow{transform:translateX(4px)}
-.dash-opt.tl-opt:hover{border-color:var(--tl)}
-.dash-opt.tl-opt .opt-icon{color:var(--tl)}
-.opt-icon{font-size:2rem;color:var(--accent);margin-bottom:1rem;display:block}
-.opt-label{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.4rem}
-.opt-desc{font-size:.85rem;color:var(--muted);line-height:1.5}
-.opt-arrow{display:inline-flex;align-items:center;margin-top:1rem;font-size:.85rem;font-weight:600;color:var(--accent);gap:.3rem;transition:transform var(--tr)}
-.tl-opt .opt-arrow{color:var(--tl)}
+.dash-hero{text-align:center;padding:2.5rem 1rem 2rem}
+.dash-title{font-size:2.8rem;font-weight:800;letter-spacing:-2px;line-height:1.1;margin-bottom:.75rem}
+.grad{background:linear-gradient(135deg,var(--P),var(--T));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dash-sub{color:var(--ink3);font-size:1rem;margin-bottom:2.5rem}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:580px;margin:0 auto}
+.opt-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r2);padding:2rem 1.5rem;cursor:pointer;transition:var(--tr);text-align:left;position:relative;overflow:hidden}
+.opt-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;opacity:.06;transition:var(--tr)}
+.opt-card.emp::before{background:var(--P)}
+.opt-card.tl::before{background:var(--T)}
+.opt-card:hover{transform:translateY(-6px);box-shadow:var(--sh2)}
+.opt-card.emp:hover{border-color:var(--P)}
+.opt-card.tl:hover{border-color:var(--T)}
+.opt-ico{font-size:2.2rem;margin-bottom:.85rem}
+.opt-card.emp .opt-ico{color:var(--P)}
+.opt-card.tl .opt-ico{color:var(--T)}
+.opt-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.35rem}
+.opt-desc{font-size:.83rem;color:var(--ink3);line-height:1.55}
+.opt-go{display:inline-flex;align-items:center;gap:.3rem;margin-top:.9rem;font-size:.82rem;font-weight:700;color:var(--P)}
+.opt-card.tl .opt-go{color:var(--T)}
+.opt-go i{transition:transform var(--tr)}
+.opt-card:hover .opt-go i{transform:translateX(4px)}
 
-/* ── FORMS ── */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.form-full{grid-column:1/-1}
-.field{display:flex;flex-direction:column;gap:.45rem}
-.field label{font-size:.85rem;font-weight:600;color:var(--ink2)}
-.field input,.field select,.field textarea{background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.7rem 1rem;font-size:.92rem;color:var(--ink);font-family:'DM Sans',sans-serif;transition:var(--tr);outline:none;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,71,255,.15)}
-.field textarea{resize:vertical;min-height:110px;line-height:1.6}
-.field select option{background:var(--surf2)}
+/* ── FORM ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.full{grid-column:1/-1}
+.fld{display:flex;flex-direction:column;gap:.38rem}
+.fld label{font-size:.82rem;font-weight:700;color:var(--ink2);letter-spacing:.2px}
+.fld input,.fld select,.fld textarea{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:.65rem 1rem;font-size:.9rem;color:var(--ink);outline:none;
+  transition:border-color var(--tr),box-shadow var(--tr);width:100%
+}
+.fld input:focus,.fld select:focus,.fld textarea:focus{
+  border-color:var(--P);box-shadow:0 0 0 3px rgba(92,53,232,.12)
+}
+.fld textarea{resize:vertical;min-height:110px;line-height:1.65}
+.fld select option{background:var(--bg2)}
+.hint{font-size:.76rem;color:var(--ink3);margin-top:.25rem}
 
 /* ── SECTION BLOCKS ── */
-.sec-block{border:1.5px solid var(--surf3);border-radius:var(--r2);padding:1.5rem;margin-bottom:1.25rem;background:var(--surf2);transition:var(--tr)}
-.sec-block:hover{border-color:var(--accent3)}
-.sec-block.tl-block{border-color:rgba(0,194,168,.3)}
-.sec-block.tl-block:hover{border-color:var(--tl)}
-.sec-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;color:var(--ink)}
-.sec-icon{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;background:rgba(108,71,255,.12);color:var(--accent);flex-shrink:0}
-.tl-block .sec-icon{background:rgba(0,194,168,.12);color:var(--tl)}
+.sec{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);padding:1.4rem;margin-top:1rem}
+.sec.tl-sec{border-left:3px solid var(--T)}
+.sec.p-sec{border-left:3px solid var(--P)}
+.sec-head{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem}
+.sec-ico{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0}
+.p-ico{background:rgba(92,53,232,.12);color:var(--P)}
+.t-ico{background:rgba(0,184,156,.12);color:var(--T)}
+.number-inp{width:90px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.55rem .8rem;font-size:1.1rem;font-weight:700;color:var(--ink);outline:none;text-align:center;transition:border-color var(--tr)}
+.number-inp:focus{border-color:var(--P)}
+.inline-ta{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.7rem .9rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;font-size:.88rem;resize:vertical;min-height:90px;line-height:1.65;transition:border-color var(--tr)}
+.inline-ta:focus{border-color:var(--P)}
+.tl-sec .inline-ta:focus{border-color:var(--T)}
 
 /* ── REPORT OUTPUT ── */
-.report-out{background:var(--ink2);color:#c8f0e8;border-radius:var(--r2);padding:1.75rem;font-family:'Courier New',monospace;font-size:.88rem;line-height:1.7;max-height:500px;overflow-y:auto;white-space:pre-wrap;border:1.5px solid var(--surf3);margin-top:1.5rem;display:none}
-.report-out.show{display:block;animation:pageIn .4s ease}
-.report-empty{text-align:center;padding:3rem;color:var(--muted);opacity:.6}
-.report-empty i{font-size:3rem;margin-bottom:.8rem;display:block;opacity:.3}
+.out-wrap{display:none;margin-top:1.25rem;background:var(--ink);border-radius:var(--r2);overflow:hidden}
+.out-wrap.show{display:block;animation:pin .4s ease}
+.out-topbar{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}
+.out-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:.3rem}
+pre.out-pre{padding:1.5rem;font-family:'Courier New',monospace;font-size:.83rem;color:#b9f6e8;line-height:1.7;white-space:pre-wrap;max-height:480px;overflow-y:auto}
 
-/* ── ADMIN LOGIN ── */
-.login-wrap{width:100%;max-width:420px;margin:0 auto}
-.login-logo{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:.5rem}
-.login-sub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:2rem}
-.lock-icon{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:1.6rem;color:#fff;box-shadow:var(--sh2)}
-.shake{animation:shake .4s ease}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* ── STATS GRID ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.25rem}
+.stat-box{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:1.2rem;text-align:center;transition:var(--tr)}
+.stat-box:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800}
+.stat-lbl{font-size:.75rem;color:var(--ink3);margin-top:.25rem;font-weight:500}
+.num-p{color:var(--P)}.num-t{color:var(--T)}.num-g{color:var(--G)}.num-y{color:var(--Y)}
 
-/* ── ADMIN PANEL ── */
-.admin-layout{max-width:1100px;margin:0 auto}
-.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
-.admin-title{font-size:1.7rem;font-weight:800;letter-spacing:-.5px}
-.tab-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1.5px solid var(--surf3)}
-.tab-btn{padding:.55rem 1.2rem;border-radius:99px;font-size:.85rem;font-weight:600;cursor:pointer;border:1.5px solid var(--surf3);background:transparent;color:var(--muted);transition:var(--tr)}
-.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:var(--sh)}
-.tab-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
-.tab-panel{display:none}
-.tab-panel.active{display:block;animation:pageIn .3s ease}
-
-/* ── STATS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:var(--surf2);border:1.5px solid var(--surf3);border-radius:var(--r2);padding:1.4rem;text-align:center;transition:var(--tr)}
-.stat-card:hover{transform:translateY(-4px);box-shadow:var(--sh)}
-.stat-num{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--tl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.stat-lbl{font-size:.8rem;color:var(--muted);margin-top:.3rem;font-weight:500}
+/* ── TABS ── */
+.tab-bar{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem;padding-bottom:.85rem;border-bottom:1.5px solid var(--border)}
+.tab{padding:.45rem 1rem;border-radius:99px;font-size:.82rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--ink3);transition:var(--tr)}
+.tab.on{background:var(--P);color:#fff;border-color:var(--P);box-shadow:0 4px 14px rgba(92,53,232,.25)}
+.tab:hover:not(.on){border-color:var(--P);color:var(--P)}
+.tp{display:none}.tp.on{display:block;animation:pin .3s ease}
 
 /* ── TABLE ── */
-.tbl-wrap{background:var(--surf2);border:1.5px solid var(--surf3);border-radius:var(--r2);overflow:hidden}
-.search-bar{padding:1rem 1.25rem;border-bottom:1.5px solid var(--surf3);display:flex;gap:.75rem;align-items:center}
-.search-bar input{flex:1;background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.55rem 1rem;font-size:.88rem;color:var(--ink);outline:none;transition:var(--tr)}
-.search-bar input:focus{border-color:var(--accent)}
+.tbl-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.tbl-search{padding:.85rem 1.1rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.7rem}
+.tbl-search input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:99px;padding:.45rem 1rem;font-size:.85rem;color:var(--ink);outline:none;transition:var(--tr)}
+.tbl-search input:focus{border-color:var(--P)}
 table{width:100%;border-collapse:collapse}
-th{background:var(--surf3);color:var(--muted);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.85rem 1rem;text-align:left}
-td{padding:.85rem 1rem;font-size:.88rem;border-bottom:1px solid var(--surf3);color:var(--ink)}
+th{background:var(--bg3);color:var(--ink3);font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:.75rem 1rem;text-align:left;white-space:nowrap}
+td{padding:.75rem 1rem;font-size:.85rem;border-bottom:1px solid var(--border)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(108,71,255,.04)}
-.badge{display:inline-block;padding:.25rem .7rem;border-radius:99px;font-size:.75rem;font-weight:700}
-.badge-purple{background:rgba(108,71,255,.15);color:var(--accent)}
-.badge-teal{background:rgba(0,194,168,.15);color:var(--tl)}
-.badge-gold{background:rgba(245,166,35,.15);color:var(--gold)}
-.badge-red{background:rgba(255,68,102,.15);color:var(--red)}
-.badge-green{background:rgba(0,200,122,.15);color:var(--green)}
-.badge-gray{background:var(--surf3);color:var(--muted)}
+tr:hover td{background:rgba(92,53,232,.03)}
 
-/* ── EMP ITEM ── */
-.emp-item{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:var(--surf2);border:1.5px solid var(--surf3);border-radius:var(--r);margin-bottom:.6rem;transition:var(--tr)}
-.emp-item:hover{border-color:var(--accent3);transform:translateX(3px)}
-.emp-name{font-weight:600;font-size:.95rem}
-.emp-id{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+/* ── BADGES ── */
+.badge{display:inline-block;padding:.2rem .65rem;border-radius:99px;font-size:.72rem;font-weight:700}
+.b-p{background:rgba(92,53,232,.12);color:var(--P)}
+.b-t{background:rgba(0,184,156,.12);color:var(--T)}
+.b-g{background:rgba(34,197,94,.12);color:var(--G)}
+.b-y{background:rgba(245,158,11,.12);color:var(--Y)}
+.b-r{background:rgba(239,68,68,.12);color:var(--R)}
+.b-gray{background:var(--bg3);color:var(--ink3)}
 
-/* ── OVERVIEW ISSUES ── */
-.ov-item{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;border-radius:var(--r);margin-bottom:.5rem;border-left:3px solid var(--tl);background:rgba(0,194,168,.05);transition:var(--tr)}
-.ov-item:hover{transform:translateX(4px)}
-.ov-item.high{border-left-color:var(--gold);background:rgba(245,166,35,.06)}
-.ov-item.critical{border-left-color:var(--red);background:rgba(255,68,102,.07)}
-.ov-count{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;padding:.2rem .75rem;border-radius:99px;background:var(--tl);color:#fff}
-.ov-count.high{background:var(--gold)}
-.ov-count.critical{background:var(--red);animation:blink 1.5s infinite}
+/* ── EMP MGMT ── */
+.emp-row{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:.5rem;transition:var(--tr)}
+.emp-row:hover{border-color:var(--P3);transform:translateX(3px)}
+.emp-nm{font-weight:600;font-size:.9rem}
+.emp-id-lbl{font-size:.78rem;color:var(--ink3);margin-top:.1rem}
 
-/* ── CHIP / KEYWORD ── */
-.chip{display:inline-block;background:rgba(0,194,168,.1);color:var(--tl);padding:.2rem .6rem;border-radius:99px;font-size:.75rem;font-weight:600;margin:.15rem;border:1px solid rgba(0,194,168,.2);transition:var(--tr)}
-.chip:hover{background:rgba(0,194,168,.2);transform:scale(1.04)}
+/* ── OVERVIEW ── */
+.ov-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem .9rem;border-radius:var(--r);margin-bottom:.45rem;border-left:3px solid var(--T);background:rgba(0,184,156,.05)}
+.ov-row.hi{border-color:var(--Y);background:rgba(245,158,11,.05)}
+.ov-row.crit{border-color:var(--R);background:rgba(239,68,68,.06)}
+.ov-cnt{font-family:'Syne',sans-serif;font-weight:800;padding:.2rem .7rem;border-radius:99px;color:#fff;font-size:.85rem}
+.ov-row .ov-cnt{background:var(--T)}
+.ov-row.hi .ov-cnt{background:var(--Y)}
+.ov-row.crit .ov-cnt{background:var(--R);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── KW CHIPS ── */
+.chip{display:inline-block;background:rgba(0,184,156,.1);color:var(--T);padding:.18rem .55rem;border-radius:99px;font-size:.72rem;font-weight:600;margin:.15rem;border:1px solid rgba(0,184,156,.2)}
 
 /* ── PHYS SUMMARY ── */
-.phys-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1rem}
-.phys-card{background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:1rem;text-align:center}
-.phys-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800}
-.phys-lbl{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.phys-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-top:.85rem}
+.phys-box{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:.9rem;text-align:center}
+.phys-v{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800}
+.phys-l{font-size:.72rem;color:var(--ink3);margin-top:.15rem}
+
+/* ── PORTAL CARDS ── */
+.p-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:1.4rem;margin-bottom:.75rem;transition:var(--tr)}
+.p-card:hover{box-shadow:var(--sh);transform:translateY(-2px)}
+.p-date{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem}
+
+/* ── ADMIN LOGIN ── */
+.lock-wrap{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1.25rem;transition:var(--tr)}
+.lock-wrap.locked{background:linear-gradient(135deg,var(--P),var(--P2));color:#fff;box-shadow:0 8px 30px rgba(92,53,232,.35)}
+.lock-wrap.bad{background:linear-gradient(135deg,var(--R),#ff7070);color:#fff}
+.lock-wrap.good{background:linear-gradient(135deg,var(--G),var(--T));color:#fff}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.shake{animation:shake .4s ease}
 
 /* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
-.modal-overlay.open{display:flex;animation:fadeIn .25s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal-box{background:var(--surf2);border:1.5px solid var(--surf3);border-radius:var(--r3);padding:2.5rem;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.5);animation:modalIn .3s ease}
-@keyframes modalIn{from{transform:translateY(30px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-.modal-close{position:absolute;top:1rem;right:1rem;background:var(--surf3);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:var(--tr)}
-.modal-close:hover{background:var(--red);color:#fff}
-.modal-box pre{background:var(--ink2);color:#c8f0e8;padding:1.5rem;border-radius:var(--r);font-size:.82rem;line-height:1.7;white-space:pre-wrap;max-height:500px;overflow-y:auto}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);z-index:400;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.on{display:flex;animation:pin .25s ease}
+.modal{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r3);padding:2rem;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.45);animation:mdin .3s ease;position:relative}
+@keyframes mdin{from{transform:scale(.95) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal pre{background:var(--ink);color:#b9f6e8;padding:1.25rem;border-radius:var(--r);font-size:.8rem;line-height:1.7;white-space:pre-wrap;max-height:480px;overflow-y:auto;margin-top:1rem}
 
 /* ── TOAST ── */
-#toastArea{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem}
-.toast-item{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-radius:var(--r2);font-size:.88rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.3);animation:slideR .3s ease;min-width:260px;max-width:340px}
-.toast-item.ok{background:var(--green);color:#fff}
-.toast-item.err{background:var(--red);color:#fff}
-.toast-item.info{background:var(--accent);color:#fff}
-@keyframes slideR{from{transform:translateX(200px);opacity:0}to{transform:translateX(0);opacity:1}}
+#toasts{position:fixed;bottom:1.4rem;right:1.4rem;z-index:9999;display:flex;flex-direction:column;gap:.45rem}
+.toast{display:flex;align-items:center;gap:.7rem;padding:.85rem 1.1rem;border-radius:var(--r2);font-size:.85rem;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.25);animation:tin .3s ease;min-width:240px}
+@keyframes tin{from{transform:translateX(180px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.ok{background:var(--G);color:#fff}
+.toast.err{background:var(--R);color:#fff}
+.toast.info{background:var(--P);color:#fff}
 
 /* ── LOADER ── */
-#loader{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:9998;display:none;align-items:center;justify-content:center}
+#loader{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:9998;display:none;align-items:center;justify-content:center}
 #loader.on{display:flex}
-.loader-card{background:var(--surf2);border-radius:var(--r2);padding:2rem 3rem;text-align:center;border:1.5px solid var(--surf3)}
-.spinner{width:48px;height:48px;border:3px solid var(--surf3);border-top-color:var(--accent);border-radius:50%;animation:rot 1s linear infinite;margin:0 auto 1rem}
+.ld{background:var(--card);border-radius:var(--r2);padding:1.75rem 2.5rem;text-align:center;border:1.5px solid var(--border)}
+.spin{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--P);border-radius:50%;animation:rot 1s linear infinite;margin:0 auto .85rem}
 @keyframes rot{to{transform:rotate(360deg)}}
 
-/* ── EMPLOYEE PORTAL ── */
-.portal-card{background:var(--surf2);border:1.5px solid var(--surf3);border-radius:var(--r2);padding:2rem;margin-bottom:1rem;transition:var(--tr)}
-.portal-card:hover{box-shadow:var(--sh);transform:translateY(-2px)}
-.portal-report-date{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
-.portal-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
-
-/* ── SETUP WIZARD ── */
-.sql-block{background:#0d0d14;color:#7dd3fc;border-radius:var(--r);padding:1.25rem;font-family:monospace;font-size:.78rem;line-height:1.7;overflow-x:auto;border:1px solid #1e1e38;margin:.75rem 0}
-.sql-block .kw{color:#818cf8}.sql-block .str{color:#86efac}.sql-block .cm{color:#4b5563}
-.step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:.82rem;flex-shrink:0;margin-right:.6rem}
+/* ── SETUP CONFIG ── */
+.cfg-step{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:1.4rem;margin-bottom:.75rem}
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--P);color:#fff;font-weight:800;font-size:.8rem;flex-shrink:0;margin-right:.6rem}
+.info-box{background:rgba(92,53,232,.07);border:1.5px solid rgba(92,53,232,.2);border-radius:var(--r);padding:1rem;font-size:.83rem;color:var(--ink2);line-height:1.6}
+.info-box code{background:rgba(92,53,232,.12);color:var(--P);padding:.1rem .4rem;border-radius:5px;font-size:.85em}
 
 /* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .dash-cards{grid-template-columns:1fr}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .form-grid{grid-template-columns:1fr}
-  .phys-grid{grid-template-columns:1fr 1fr}
-  .admin-header{flex-direction:column;align-items:flex-start}
-  .tab-row{gap:.35rem}
-  .dash-title{font-size:1.9rem}
-  nav{padding:0 1rem;gap:.5rem}
-  .nav-btn span{display:none}
+@media(max-width:720px){
+  .form-row,.opt-grid,.stat-grid,.phys-row{grid-template-columns:1fr 1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .dash-title{font-size:2rem}
+  nav{gap:.4rem;padding:0 .9rem}
+  .btn span{display:none}
 }
-@media(max-width:480px){
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .dash-title{font-size:1.5rem}
+@media(max-width:440px){
+  .opt-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .dash-title{font-size:1.7rem}
 }
 </style>
 </head>
 <body>
 
-<!-- BOOT -->
-<div id="bootScreen">
-  <div class="boot-logo">Salt<span>Sync</span> Report</div>
-  <div class="boot-bar"><div class="boot-fill"></div></div>
-  <div class="boot-txt" id="bootTxt">Initializing cloud connection…</div>
+<!-- ══ BOOT SCREEN ══ -->
+<div id="boot">
+  <div class="boot-brand">Salt<b>Sync</b> Report</div>
+  <div class="boot-track"><div class="boot-bar"></div></div>
+  <div class="boot-status" id="bootSt">Starting up…</div>
 </div>
 
-<!-- NAV -->
+<!-- ══ NAV ══ -->
 <nav>
-  <a class="nav-brand" href="#" onclick="goTo('dashboard')">Salt<span>Sync</span> <span style="opacity:.4;font-size:.7rem;font-weight:400">Report Pro</span></a>
-  <span class="nav-pill" id="cloudPill"><span class="nav-dot"></span> Connecting</span>
-  <button class="nav-btn btn-ghost" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
-  <button class="nav-btn btn-ghost" onclick="goTo('empPortal')"><i class="fas fa-user"></i> <span>My Reports</span></button>
-  <button class="nav-btn btn-accent" onclick="showAdminGate()"><i class="fas fa-shield-halved"></i> <span>Admin</span></button>
+  <a class="brand" href="#" onclick="go('dash')">Salt<b>Sync</b></a>
+  <span class="status-pill" id="pill"><span class="status-dot pulse"></span> Loading</span>
+  <button class="btn btn-ghost btn-sm" onclick="toggleDark()"><i class="fas fa-moon" id="thIcon"></i></button>
+  <button class="btn btn-ghost btn-sm" onclick="go('portal')"><i class="fas fa-user"></i> <span>My Reports</span></button>
+  <button class="btn btn-p btn-sm" onclick="showAdminGate()"><i class="fas fa-shield-halved"></i> <span>Admin</span></button>
 </nav>
 
-<!-- NOTIFICATION -->
-<div id="notifBanner"><i class="fas fa-bell me-1"></i> <span id="notifTxt">Loading…</span></div>
+<!-- ══ NOTIFICATION ══ -->
+<div id="notifBar"><i class="fas fa-bell" style="margin-right:.4rem"></i><span id="notifTxt">Loading…</span></div>
 
-<!-- ══════════════════ PAGES ══════════════════ -->
+<!-- ════════════════════════════════
+     PAGES
+════════════════════════════════ -->
 
-<!-- SETUP -->
-<div class="page center-page" id="pageSetup">
-  <div style="max-width:700px;width:100%">
+<!-- FIRST-TIME CONFIG (admin only sees this once) -->
+<div class="page fcenter" id="pConfig">
+  <div class="wrap-md">
     <div class="card" style="margin-bottom:1rem">
-      <h2 style="margin-bottom:.5rem"><i class="fas fa-database" style="color:var(--accent)"></i> Cloud Database Setup</h2>
-      <p style="color:var(--muted);font-size:.9rem">Connect a free JSONBin.io database — no account required for testing, free tier works perfectly.</p>
+      <h2 style="margin-bottom:.5rem"><i class="fas fa-plug" style="color:var(--P)"></i> One-Time Cloud Setup</h2>
+      <p style="color:var(--ink3);font-size:.88rem">You only do this ONCE. After setup, all employees just open the link — no setup needed for them.</p>
     </div>
-
-    <div class="card card-sm" style="margin-bottom:.75rem">
-      <div style="display:flex;align-items:flex-start;gap:.8rem">
-        <span class="step-num">1</span>
-        <div>
-          <div style="font-weight:700;margin-bottom:.3rem">Go to JSONBin.io and get a free API key</div>
-          <div style="font-size:.85rem;color:var(--muted)">Visit <a href="https://jsonbin.io" target="_blank" style="color:var(--accent)">jsonbin.io</a> → Sign up free → Dashboard → API Keys → Create key. Copy the <b>Secret Key</b>.</div>
-        </div>
+    <div class="cfg-step">
+      <h6><span class="step-n">1</span>Create free Firebase project</h6>
+      <div style="font-size:.85rem;color:var(--ink3);margin:.5rem 0">Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--P);font-weight:600">console.firebase.google.com</a> → Add project → any name → Continue → Disable Analytics → Create Project</div>
+    </div>
+    <div class="cfg-step">
+      <h6><span class="step-n">2</span>Create Realtime Database</h6>
+      <div style="font-size:.85rem;color:var(--ink3);margin:.5rem 0">Build → Realtime Database → Create Database → Start in <b>test mode</b> → Enable</div>
+    </div>
+    <div class="cfg-step">
+      <h6><span class="step-n">3</span>Get your database URL</h6>
+      <div style="font-size:.85rem;color:var(--ink3);margin:.5rem 0">Copy the URL shown (looks like: <code style="background:var(--bg3);padding:.1rem .4rem;border-radius:4px;font-size:.82rem">https://your-app-default-rtdb.firebaseio.com</code>)</div>
+    </div>
+    <div class="cfg-step">
+      <div class="fld" style="margin-bottom:.85rem">
+        <label>Firebase Database URL</label>
+        <input type="url" id="cfgUrl" placeholder="https://your-app-default-rtdb.firebaseio.com">
       </div>
-    </div>
-
-    <div class="card card-sm" style="margin-bottom:.75rem">
-      <div style="display:flex;align-items:flex-start;gap:.8rem">
-        <span class="step-num">2</span>
-        <div style="flex:1">
-          <div style="font-weight:700;margin-bottom:.5rem">Paste your JSONBin API Key</div>
-          <div class="field">
-            <input type="password" id="cfgKey" placeholder="$2b$10$... (your secret key)">
-          </div>
-          <div style="font-size:.8rem;color:var(--muted);margin-top:.4rem">Your key is stored only in this browser. Reports go to your private JSONBin bins.</div>
-        </div>
+      <div class="info-box" style="margin-bottom:1rem">
+        <i class="fas fa-info-circle" style="color:var(--P)"></i> Once you click Connect, <b>all your employees just open the website</b> — no setup, no API keys, nothing technical required from them.
       </div>
-    </div>
-
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-      <button class="nav-btn btn-accent" style="flex:1;justify-content:center;padding:.8rem" onclick="setupCloud()"><i class="fas fa-plug"></i> Connect & Initialize</button>
-      <button class="nav-btn btn-ghost" style="padding:.8rem 1.2rem" onclick="useLocal()"><i class="fas fa-hdd"></i> Use Local Only</button>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn btn-p btn-full" style="flex:1" onclick="doSetup()"><i class="fas fa-plug"></i> Connect & Go Live</button>
+        <button class="btn btn-ghost" onclick="useLocal()" style="padding:.8rem 1.2rem"><i class="fas fa-hdd"></i></button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- DASHBOARD -->
-<div class="page" id="pageDashboard">
-  <div class="dash-hero">
-    <div class="dash-title">Your Reports,<br><span class="grad">Everywhere.</span></div>
-    <div class="dash-sub">Generate, save & track daily reports — synced to the cloud in real time.</div>
-    <div class="dash-cards">
-      <div class="dash-opt" onclick="goTo('empReport')">
-        <i class="fas fa-clipboard-list opt-icon"></i>
-        <div class="opt-label">Daily Issue Report</div>
-        <div class="opt-desc">Employee daily log with issues, physical support & SS numbers.</div>
-        <div class="opt-arrow">Start Report <i class="fas fa-arrow-right"></i></div>
+<div class="page" id="pDash">
+  <div class="wrap">
+    <div class="dash-hero">
+      <h1 class="dash-title">Daily Reports<br><span class="grad">Made Simple.</span></h1>
+      <div class="dash-sub">Generate, save & track — everything synced to cloud automatically.</div>
+      <div class="opt-grid">
+        <div class="opt-card emp" onclick="go('empRep')">
+          <div class="opt-ico"><i class="fas fa-clipboard-list"></i></div>
+          <div class="opt-name">Daily Issue Report</div>
+          <div class="opt-desc">Employee daily log — issues, physical support & processing.</div>
+          <div class="opt-go">Start <i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="opt-card tl" onclick="go('tlRep')">
+          <div class="opt-ico"><i class="fas fa-chart-line"></i></div>
+          <div class="opt-name">Team Leader Report</div>
+          <div class="opt-desc">Full shift overview — remote, physical, processing breakdown.</div>
+          <div class="opt-go">Start <i class="fas fa-arrow-right"></i></div>
+        </div>
       </div>
-      <div class="dash-opt tl-opt" onclick="goTo('tlReport')">
-        <i class="fas fa-chart-line opt-icon"></i>
-        <div class="opt-label">Team Leader Report</div>
-        <div class="opt-desc">Full shift overview — remote, physical, processing breakdown.</div>
-        <div class="opt-arrow">Start Report <i class="fas fa-arrow-right"></i></div>
-      </div>
+      <div style="margin-top:1.75rem;font-size:.8rem;color:var(--ink3)"><i class="fas fa-cloud" style="margin-right:.3rem"></i>Reports auto-saved to cloud · Access from any device</div>
     </div>
-    <div style="margin-top:2rem;font-size:.82rem;color:var(--muted)"><i class="fas fa-cloud" style="margin-right:.3rem"></i>All data synced to cloud · Access from any device</div>
   </div>
 </div>
 
 <!-- EMPLOYEE REPORT -->
-<div class="page" id="pageEmpReport">
-  <div style="max-width:820px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
-      <div>
-        <h2 style="letter-spacing:-.5px">Daily Issue Report</h2>
-        <div style="font-size:.85rem;color:var(--muted)">Fill in the fields below and save to cloud</div>
-      </div>
-      <button class="nav-btn btn-ghost" onclick="goTo('dashboard')"><i class="fas fa-arrow-left"></i> Back</button>
+<div class="page" id="pEmpRep">
+  <div class="wrap-md">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div><h2 style="letter-spacing:-.5px">Daily Issue Report</h2><div style="font-size:.82rem;color:var(--ink3)">Fill in and save to cloud</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="go('dash')"><i class="fas fa-arrow-left"></i> Back</button>
     </div>
     <div class="card">
-      <div class="form-grid">
-        <div class="field"><label>Date</label><input type="date" id="eDate"></div>
-        <div class="field"><label>Select Employee</label>
-          <select id="eNameSel" onchange="fillEmp()"><option value="">— Loading employees —</option></select></div>
-        <div class="field"><label>Employee Name</label><input type="text" id="eName" placeholder="Full name"></div>
-        <div class="field"><label>Employee ID</label><input type="text" id="eId" placeholder="Salt-S-XXX" readonly style="opacity:.7"></div>
-        <div class="field"><label>Duty Shift</label>
-          <select id="eShift"><option value="">— Select —</option><option>Day</option><option>Evening</option><option>Night</option></select></div>
-        <div class="field form-full"><label>Issues (one per line)</label><textarea id="eIssues" placeholder="Type each issue on a new line…"></textarea></div>
+      <div class="form-row" style="margin-bottom:1rem">
+        <div class="fld"><label>Date</label><input type="date" id="eDate"></div>
+        <div class="fld"><label>Select Employee</label>
+          <select id="eNameSel" onchange="fillEmp()"><option value="">— Select —</option></select></div>
+        <div class="fld"><label>Employee Name</label><input type="text" id="eName" placeholder="Full name"></div>
+        <div class="fld"><label>Employee ID</label><input type="text" id="eId" placeholder="Salt-S-XXX" readonly style="opacity:.65"></div>
+        <div class="fld"><label>Duty Shift</label>
+          <select id="eShift"><option value="">— Select Shift —</option><option>Day</option><option>Evening</option><option>Night</option></select></div>
+        <div class="fld full"><label>Issues <span style="color:var(--ink3);font-weight:400">(one per line)</span></label>
+          <textarea id="eIssues" placeholder="Type each issue on a new line…"></textarea></div>
       </div>
 
-      <div class="sec-block" style="margin-top:1rem">
-        <div class="sec-title"><span class="sec-icon"><i class="fas fa-hands-helping"></i></span>Physical Support Count</div>
+      <div class="sec p-sec">
+        <div class="sec-head"><span class="sec-ico p-ico"><i class="fas fa-hands-helping"></i></span>Physical Support Count</div>
         <div style="display:flex;align-items:center;gap:1rem">
-          <input type="number" id="ePhys" value="0" min="0" style="width:100px;background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.6rem .8rem;font-size:1rem;color:var(--ink);outline:none" onchange="prevPhys()">
-          <span style="font-size:.85rem;color:var(--muted)">Adds to total received & solved count automatically.</span>
+          <input type="number" class="number-inp" id="ePhys" value="0" min="0" onchange="prevPhys()">
+          <span style="font-size:.82rem;color:var(--ink3)">Adds to total received & solved automatically.</span>
         </div>
-        <div id="physAlert"></div>
+        <div id="physNote"></div>
       </div>
 
-      <div class="sec-block">
-        <div class="sec-title"><span class="sec-icon"><i class="fas fa-list-ol"></i></span>SS Numbers / Processing</div>
-        <textarea id="eSS" placeholder="Paste SS numbers here, one per line…" style="background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.7rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;resize:vertical;min-height:90px;transition:var(--tr)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--surf3)'"></textarea>
+      <div class="sec p-sec">
+        <div class="sec-head"><span class="sec-ico p-ico"><i class="fas fa-list-ol"></i></span>SS Numbers / Processing Issues</div>
+        <textarea class="inline-ta" id="eSS" placeholder="Paste SS numbers, one per line…"></textarea>
       </div>
 
-      <div class="sec-block">
-        <div class="sec-title"><span class="sec-icon"><i class="fas fa-star"></i></span>Special Task / Note</div>
-        <textarea id="eSpecial" placeholder="Any special accomplishments or notes…" style="background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.7rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;resize:vertical;min-height:80px;transition:var(--tr)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--surf3)'"></textarea>
+      <div class="sec p-sec">
+        <div class="sec-head"><span class="sec-ico p-ico"><i class="fas fa-star"></i></span>Special Task / Note</div>
+        <textarea class="inline-ta" id="eSpecial" placeholder="Any special accomplishments or notes…" style="min-height:75px"></textarea>
       </div>
 
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:flex-end;margin-top:1.25rem">
-        <button class="nav-btn btn-ghost" onclick="copyOut('eReportOut')"><i class="fas fa-copy"></i> Copy</button>
-        <button class="nav-btn btn-accent" onclick="genEmpReport()"><i class="fas fa-cloud-upload-alt"></i> Generate & Save</button>
+      <div style="display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="copyOut('eOut')"><i class="fas fa-copy"></i> Copy</button>
+        <button class="btn btn-p" onclick="genEmp()"><i class="fas fa-cloud-upload-alt"></i> Generate & Save</button>
       </div>
-      <div class="report-out" id="eReportOut"></div>
+
+      <div class="out-wrap" id="eOut">
+        <div class="out-topbar">
+          <div><span class="out-dot" style="background:#ff5f57"></span><span class="out-dot" style="background:#febc2e"></span><span class="out-dot" style="background:#28c840"></span></div>
+          <span style="font-size:.75rem;color:rgba(255,255,255,.4)">report.txt</span>
+          <button onclick="copyOut('eOut')" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);padding:.25rem .6rem;border-radius:6px;font-size:.75rem;cursor:pointer"><i class="fas fa-copy"></i> copy</button>
+        </div>
+        <pre class="out-pre" id="eOutPre"></pre>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- TL REPORT -->
-<div class="page" id="pageTlReport">
-  <div style="max-width:860px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
-      <div>
-        <h2 style="letter-spacing:-.5px;color:var(--tl)">Team Leader Report</h2>
-        <div style="font-size:.85rem;color:var(--muted)">Comprehensive shift report with full breakdown</div>
-      </div>
-      <button class="nav-btn btn-ghost" onclick="goTo('dashboard')"><i class="fas fa-arrow-left"></i> Back</button>
+<div class="page" id="pTlRep">
+  <div class="wrap-md">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div><h2 style="letter-spacing:-.5px;color:var(--T)">Team Leader Report</h2><div style="font-size:.82rem;color:var(--ink3)">Full shift breakdown — saved to cloud</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="go('dash')"><i class="fas fa-arrow-left"></i> Back</button>
     </div>
     <div class="card">
-      <div class="form-grid">
-        <div class="field"><label>Date</label><input type="date" id="tDate"></div>
-        <div class="field"><label>TL Name</label>
+      <div class="form-row" style="margin-bottom:1rem">
+        <div class="fld"><label>Date</label><input type="date" id="tDate"></div>
+        <div class="fld"><label>TL Name</label>
           <select id="tName"><option value="">— Select TL —</option><option>Safikul Islam</option><option>S.M Faisal</option></select></div>
-        <div class="field form-full"><label>Report Shift</label>
+        <div class="fld full"><label>Report Shift</label>
           <select id="tShift"><option value="">— Select —</option>
             <option value="Day (9:00AM to 6:30PM)">Day (9:00AM to 6:30PM)</option>
             <option value="All Day (9:00AM to 9:00AM)">All Day (9:00AM to 9:00AM)</option>
             <option>Evening</option><option>Night</option></select></div>
-        <div class="field form-full"><label>List of Issues (one per line)</label>
+        <div class="fld full"><label>List of Issues <span style="font-weight:400;color:var(--ink3)">(one per line)</span></label>
           <textarea id="tIssues" placeholder="Enter issues…" oninput="updateOv()"></textarea></div>
       </div>
 
-      <div class="sec-block tl-block" style="margin-top:1rem">
-        <div class="sec-title"><span class="sec-icon"><i class="fas fa-users"></i></span>Processing Responsible Persons</div>
-        <input type="text" id="tPersons" value="Sakib + labib + Sujan" style="background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.7rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;transition:var(--tr)">
+      <div class="sec tl-sec">
+        <div class="sec-head"><span class="sec-ico t-ico"><i class="fas fa-users"></i></span>Processing Responsible Persons</div>
+        <input type="text" id="tPersons" value="Sakib + labib + Sujan" style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.65rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;transition:border-color var(--tr)">
       </div>
 
-      <div class="sec-block tl-block">
-        <div class="sec-title" style="justify-content:space-between">
-          <div style="display:flex;align-items:center;gap:.5rem"><span class="sec-icon"><i class="fas fa-chart-bar"></i></span>TL Overview</div>
-          <span class="badge badge-gray" id="ovBadge">0 repeated</span>
+      <div class="sec tl-sec">
+        <div class="sec-head" style="justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:.5rem"><span class="sec-ico t-ico"><i class="fas fa-chart-bar"></i></span>TL Overview</div>
+          <span class="badge b-gray" id="ovBadge">0 repeated</span>
         </div>
-        <div id="tlOvList"><div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.88rem">Start typing issues above to see overview</div></div>
-        <div style="margin-top:1rem;padding:1rem;background:rgba(0,194,168,.05);border-radius:var(--r);border-left:3px solid var(--tl)">
-          <div style="font-size:.82rem;font-weight:700;margin-bottom:.5rem;color:var(--tl)"><i class="fas fa-tags"></i> Issue Categories</div>
-          <div id="kw"></div>
-        </div>
-      </div>
-
-      <div class="sec-block">
-        <div class="sec-title"><span class="sec-icon"><i class="fas fa-tools"></i></span>Physical Support Issues</div>
-        <textarea id="tPhys" placeholder="ONT replacement - done&#10;Fiber splicing - shift&#10;Router setup - cancel" oninput="updatePhysPrev()"></textarea>
-        <div style="font-size:.8rem;color:var(--muted);margin-top:.4rem">done/fixed/solved → Complete &bull; shift/pending → Shift &bull; cancel → Cancel</div>
-        <div id="physPrev" style="display:none;margin-top:.75rem">
-          <div class="phys-grid" id="physGrid"></div>
+        <div id="tlOvList"><div style="text-align:center;padding:1.2rem;color:var(--ink3);font-size:.83rem">Type issues above to see automatic overview</div></div>
+        <div style="margin-top:1rem;padding:.85rem 1rem;background:rgba(0,184,156,.05);border-radius:var(--r);border-left:3px solid var(--T)">
+          <div style="font-size:.78rem;font-weight:700;color:var(--T);margin-bottom:.4rem"><i class="fas fa-tags"></i> Keywords</div>
+          <div id="kwList"></div>
         </div>
       </div>
 
-      <div class="sec-block tl-block">
-        <div class="sec-title"><span class="sec-icon"><i class="fas fa-list-ol"></i></span>SS Numbers / Processing</div>
-        <textarea id="tSS" placeholder="Paste SS numbers here…" style="background:var(--surf);border:1.5px solid var(--surf3);border-radius:var(--r);padding:.7rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;resize:vertical;min-height:90px;transition:var(--tr)" onfocus="this.style.borderColor='var(--tl)'" onblur="this.style.borderColor='var(--surf3)'"></textarea>
+      <div class="sec p-sec">
+        <div class="sec-head"><span class="sec-ico p-ico"><i class="fas fa-tools"></i></span>Physical Support Issues</div>
+        <textarea class="inline-ta" id="tPhys" placeholder="ONT replacement - done&#10;Fiber splicing - shift&#10;Router setup - cancel" oninput="updatePhys()"></textarea>
+        <div class="hint">done/fixed/solved → Complete &bull; shift/pending → Shift &bull; cancel → Cancel</div>
+        <div id="physSum" style="display:none"><div class="phys-row" id="physGrid"></div></div>
       </div>
 
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:flex-end;margin-top:1.25rem">
-        <button class="nav-btn btn-ghost" onclick="copyOut('tReportOut')"><i class="fas fa-copy"></i> Copy</button>
-        <button class="nav-btn btn-tl" onclick="genTLReport()"><i class="fas fa-cloud-upload-alt"></i> Generate & Save</button>
+      <div class="sec tl-sec">
+        <div class="sec-head"><span class="sec-ico t-ico"><i class="fas fa-list-ol"></i></span>SS Numbers / Processing</div>
+        <textarea class="inline-ta" id="tSS" placeholder="Paste SS numbers here…"></textarea>
       </div>
-      <div class="report-out" id="tReportOut"></div>
+
+      <div style="display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="copyOut('tOut')"><i class="fas fa-copy"></i> Copy</button>
+        <button class="btn btn-t" onclick="genTL()"><i class="fas fa-cloud-upload-alt"></i> Generate & Save</button>
+      </div>
+
+      <div class="out-wrap" id="tOut">
+        <div class="out-topbar">
+          <div><span class="out-dot" style="background:#ff5f57"></span><span class="out-dot" style="background:#febc2e"></span><span class="out-dot" style="background:#28c840"></span></div>
+          <span style="font-size:.75rem;color:rgba(255,255,255,.4)">tl-report.txt</span>
+          <button onclick="copyOut('tOut')" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);padding:.25rem .6rem;border-radius:6px;font-size:.75rem;cursor:pointer"><i class="fas fa-copy"></i> copy</button>
+        </div>
+        <pre class="out-pre" id="tOutPre"></pre>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- EMPLOYEE PORTAL -->
-<div class="page" id="pageEmpPortal">
-  <div style="max-width:860px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
-      <div><h2>My Reports</h2><div style="font-size:.85rem;color:var(--muted)">View your personal report history from cloud</div></div>
-      <button class="nav-btn btn-ghost" onclick="goTo('dashboard')"><i class="fas fa-arrow-left"></i> Back</button>
+<div class="page" id="pPortal">
+  <div class="wrap-md">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div><h2>My Reports</h2><div style="font-size:.82rem;color:var(--ink3)">View your personal report history from the cloud</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="go('dash')"><i class="fas fa-arrow-left"></i> Back</button>
     </div>
-    <div class="card card-sm" style="margin-bottom:1rem">
-      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
-        <div class="field" style="flex:1;min-width:200px"><label>Select Your Name</label>
-          <select id="portalName" onchange="loadPortal()"><option value="">— Select your name —</option></select></div>
-        <div style="align-self:flex-end">
-          <button class="nav-btn btn-accent" onclick="loadPortal()"><i class="fas fa-sync"></i> Refresh</button>
-        </div>
+    <div class="card-flat card-sm" style="margin-bottom:1rem">
+      <div style="display:flex;gap:.75rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="fld" style="flex:1;min-width:180px"><label>Select Your Name</label>
+          <select id="portalSel" onchange="loadPortal()"><option value="">— Who are you? —</option></select></div>
+        <button class="btn btn-p btn-sm" onclick="loadPortal()"><i class="fas fa-sync"></i> Refresh</button>
       </div>
     </div>
-    <div id="portalList"><div class="report-empty"><i class="fas fa-user-circle"></i><p>Select your name to view reports</p></div></div>
+    <div id="portalList">
+      <div style="text-align:center;padding:3rem;color:var(--ink3)"><i class="fas fa-user-circle" style="font-size:3rem;opacity:.2;display:block;margin-bottom:.7rem"></i>Select your name above to view your reports</div>
+    </div>
   </div>
 </div>
 
-<!-- ADMIN GATE (LOGIN) -->
-<div class="page center-page" id="pageAdminGate">
-  <div class="login-wrap">
-    <div class="lock-icon" id="lockIcon"><i class="fas fa-lock"></i></div>
-    <div class="login-logo">Admin Access</div>
-    <div class="login-sub">Enter your password to continue</div>
-    <div class="card">
-      <div class="field" style="margin-bottom:1rem">
+<!-- ADMIN GATE -->
+<div class="page fcenter" id="pAdminGate">
+  <div class="wrap-sm">
+    <div class="lock-wrap locked" id="lockIco"><i class="fas fa-lock"></i></div>
+    <h2 style="text-align:center;margin-bottom:.35rem">Admin Access</h2>
+    <p style="text-align:center;color:var(--ink3);font-size:.88rem;margin-bottom:1.5rem">Enter password to continue</p>
+    <div class="card" id="loginCard">
+      <div class="fld" style="margin-bottom:.85rem">
         <label>Password</label>
-        <input type="password" id="adminPassInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')tryLogin()">
+        <input type="password" id="aPass" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
-      <div id="loginErr" style="color:var(--red);font-size:.85rem;margin-bottom:.75rem;display:none"><i class="fas fa-exclamation-triangle"></i> <span id="loginErrTxt"></span></div>
-      <button class="nav-btn btn-accent" style="width:100%;justify-content:center;padding:.85rem" onclick="tryLogin()"><i class="fas fa-unlock"></i> Login</button>
-      <button class="nav-btn btn-ghost" style="width:100%;justify-content:center;margin-top:.5rem;padding:.7rem" onclick="goTo('dashboard')">Cancel</button>
-      <div style="text-align:center;margin-top:1rem;font-size:.78rem;color:var(--muted)">Default password: <code style="color:var(--accent)">admin</code></div>
+      <div id="loginErr" style="display:none;background:rgba(239,68,68,.08);border:1.5px solid rgba(239,68,68,.2);border-radius:var(--r);padding:.65rem .9rem;font-size:.83rem;color:var(--R);margin-bottom:.85rem"><i class="fas fa-exclamation-triangle"></i> <span id="loginErrTxt"></span></div>
+      <button class="btn btn-p btn-full" onclick="doLogin()"><i class="fas fa-unlock-alt"></i> Login</button>
+      <button class="btn btn-ghost btn-full" style="margin-top:.5rem" onclick="go('dash')">Cancel</button>
+      <div style="text-align:center;margin-top:1rem;font-size:.75rem;color:var(--ink3)">Default password: <code style="color:var(--P);font-size:.82rem">admin</code></div>
     </div>
   </div>
 </div>
 
 <!-- ADMIN PANEL -->
-<div class="page" id="pageAdmin">
-  <div class="admin-layout">
-    <div class="admin-header">
-      <h2 class="admin-title"><i class="fas fa-shield-halved" style="color:var(--accent)"></i> Admin Panel</h2>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="nav-btn btn-ghost" onclick="goTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
-        <button class="nav-btn btn-danger" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+<div class="page" id="pAdmin">
+  <div class="wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+      <h2 style="letter-spacing:-.5px"><i class="fas fa-shield-halved" style="color:var(--P)"></i> Admin Panel</h2>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-ghost btn-sm" onclick="go('dash')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+        <button class="btn btn-r btn-sm" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </div>
 
     <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num" id="st0">0</div><div class="stat-lbl">Employee Reports</div></div>
-      <div class="stat-card"><div class="stat-num" id="st1">0</div><div class="stat-lbl">TL Reports</div></div>
-      <div class="stat-card"><div class="stat-num" id="st2">0</div><div class="stat-lbl">Total Issues</div></div>
-      <div class="stat-card"><div class="stat-num" id="st3">0</div><div class="stat-lbl">Issues Solved</div></div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num num-p" id="s0">0</div><div class="stat-lbl">Employee Reports</div></div>
+      <div class="stat-box"><div class="stat-num num-t" id="s1">0</div><div class="stat-lbl">TL Reports</div></div>
+      <div class="stat-box"><div class="stat-num num-g" id="s2">0</div><div class="stat-lbl">Total Issues</div></div>
+      <div class="stat-box"><div class="stat-num num-y" id="s3">0</div><div class="stat-lbl">Issues Solved</div></div>
     </div>
 
     <!-- Tabs -->
-    <div class="tab-row">
-      <button class="tab-btn active" onclick="switchTab('tEmpRep')"><i class="fas fa-users"></i> Employee Reports</button>
-      <button class="tab-btn" onclick="switchTab('tTLRep')"><i class="fas fa-user-check"></i> TL Reports</button>
-      <button class="tab-btn" onclick="switchTab('tEmps')"><i class="fas fa-users-cog"></i> Manage Employees</button>
-      <button class="tab-btn" onclick="switchTab('tNotif')"><i class="fas fa-bell"></i> Notification</button>
-      <button class="tab-btn" onclick="switchTab('tDB')"><i class="fas fa-database"></i> Database</button>
-      <button class="tab-btn" onclick="switchTab('tPwd')"><i class="fas fa-key"></i> Security</button>
+    <div class="tab-bar">
+      <button class="tab on" onclick="tab(this,'tER')"><i class="fas fa-users"></i> Emp Reports</button>
+      <button class="tab" onclick="tab(this,'tTL')"><i class="fas fa-user-check"></i> TL Reports</button>
+      <button class="tab" onclick="tab(this,'tEmps')"><i class="fas fa-users-cog"></i> Employees</button>
+      <button class="tab" onclick="tab(this,'tNotif')"><i class="fas fa-bell"></i> Notification</button>
+      <button class="tab" onclick="tab(this,'tSec')"><i class="fas fa-key"></i> Security</button>
+      <button class="tab" onclick="tab(this,'tDB')"><i class="fas fa-database"></i> Database</button>
     </div>
 
-    <!-- TAB: Employee Reports -->
-    <div class="tab-panel active" id="tEmpRep">
-      <div class="tbl-wrap">
-        <div class="search-bar"><i class="fas fa-search" style="color:var(--muted)"></i><input id="empSearch" placeholder="Search by name or date…" oninput="filterEmpTable()"></div>
-        <div style="overflow-x:auto">
-        <table><thead><tr><th>Date</th><th>Employee</th><th>Shift</th><th>Issues</th><th>Solved</th><th>Physical</th><th>Special</th><th>Actions</th></tr></thead>
-        <tbody id="empTBody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)"><div class="spinner" style="width:32px;height:32px;margin:0 auto"></div></td></tr></tbody></table>
-        </div>
+    <!-- Employee Reports -->
+    <div class="tp on" id="tER">
+      <div class="tbl-card">
+        <div class="tbl-search"><i class="fas fa-search" style="color:var(--ink3)"></i><input id="eSearch" placeholder="Search by name or date…" oninput="filterET()"></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Date</th><th>Employee</th><th>Shift</th><th>Issues</th><th>Solved</th><th>Physical</th><th>Special</th><th></th></tr></thead>
+          <tbody id="eTBody"></tbody>
+        </table></div>
       </div>
     </div>
 
-    <!-- TAB: TL Reports -->
-    <div class="tab-panel" id="tTLRep">
-      <div class="tbl-wrap">
-        <div class="search-bar"><i class="fas fa-search" style="color:var(--muted)"></i><input id="tlSearch" placeholder="Search by TL name or date…" oninput="filterTLTable()"></div>
-        <div style="overflow-x:auto">
-        <table><thead><tr><th>Date</th><th>TL</th><th>Shift</th><th>Issues</th><th>Solved</th><th>Physical</th><th>Processing</th><th>Actions</th></tr></thead>
-        <tbody id="tlTBody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)"><div class="spinner" style="width:32px;height:32px;margin:0 auto"></div></td></tr></tbody></table>
-        </div>
+    <!-- TL Reports -->
+    <div class="tp" id="tTL">
+      <div class="tbl-card">
+        <div class="tbl-search"><i class="fas fa-search" style="color:var(--ink3)"></i><input id="tSearch" placeholder="Search by TL or date…" oninput="filterTT()"></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Date</th><th>TL</th><th>Shift</th><th>Issues</th><th>Solved</th><th>Physical</th><th>Processing</th><th></th></tr></thead>
+          <tbody id="tTBody"></tbody>
+        </table></div>
       </div>
     </div>
 
-    <!-- TAB: Manage Employees -->
-    <div class="tab-panel" id="tEmps">
+    <!-- Employees -->
+    <div class="tp" id="tEmps">
       <div class="card" style="margin-bottom:1rem">
-        <h4 style="margin-bottom:1rem"><i class="fas fa-user-plus" style="color:var(--accent)"></i> Add Employee</h4>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-          <div class="field" style="flex:2;min-width:180px"><label>Full Name</label><input id="newEName" placeholder="e.g. Md Arif Hossain"></div>
-          <div class="field" style="flex:1;min-width:140px"><label>Employee ID</label><input id="newEId" placeholder="e.g. Salt-S-100"></div>
-          <div style="align-self:flex-end"><button class="nav-btn btn-green" onclick="addEmployee()"><i class="fas fa-plus"></i> Add</button></div>
+        <h4 style="margin-bottom:1rem"><i class="fas fa-user-plus" style="color:var(--P)"></i> Add Employee</h4>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
+          <div class="fld" style="flex:2;min-width:160px"><label>Full Name</label><input id="nEName" placeholder="Full name"></div>
+          <div class="fld" style="flex:1;min-width:130px"><label>Employee ID</label><input id="nEId" placeholder="Salt-S-XXX"></div>
+          <button class="btn btn-g" onclick="addEmp()"><i class="fas fa-plus"></i> Add</button>
         </div>
       </div>
-      <div class="card">
-        <h4 style="margin-bottom:1rem"><i class="fas fa-list" style="color:var(--accent)"></i> Current Employees</h4>
-        <div id="empList"></div>
-      </div>
+      <div class="card"><h4 style="margin-bottom:1rem"><i class="fas fa-list" style="color:var(--P)"></i> All Employees</h4><div id="empMgList"></div></div>
     </div>
 
-    <!-- TAB: Notification -->
-    <div class="tab-panel" id="tNotif">
+    <!-- Notification -->
+    <div class="tp" id="tNotif">
       <div class="card">
-        <h4 style="margin-bottom:.5rem"><i class="fas fa-bell" style="color:var(--accent)"></i> Notification Banner</h4>
-        <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem">This message appears at the top for all users.</p>
-        <div class="field"><label>Message Text</label><textarea id="notifInput" rows="3" placeholder="Enter notification text…"></textarea></div>
-        <div style="margin-top:1rem;display:flex;gap:.75rem">
-          <button class="nav-btn btn-accent" onclick="saveNotif()"><i class="fas fa-save"></i> Save & Publish</button>
-          <button class="nav-btn btn-ghost" onclick="previewNotif()"><i class="fas fa-eye"></i> Preview</button>
+        <h4 style="margin-bottom:.4rem"><i class="fas fa-bell" style="color:var(--P)"></i> Notification Banner</h4>
+        <p style="color:var(--ink3);font-size:.85rem;margin-bottom:1rem">Shows at the top for all users. Change anytime.</p>
+        <div class="fld"><label>Message</label><textarea id="notifInp" rows="2" placeholder="Enter notification…"></textarea></div>
+        <div style="display:flex;gap:.65rem;margin-top:.85rem">
+          <button class="btn btn-p" onclick="saveNotif()"><i class="fas fa-save"></i> Save & Publish</button>
+          <button class="btn btn-ghost" onclick="previewNotif()"><i class="fas fa-eye"></i> Preview</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB: Database -->
-    <div class="tab-panel" id="tDB">
+    <!-- Security -->
+    <div class="tp" id="tSec">
       <div class="card">
-        <h4 style="margin-bottom:1rem"><i class="fas fa-database" style="color:var(--accent)"></i> Database Configuration</h4>
-        <div style="display:grid;gap:.75rem;margin-bottom:1.5rem">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;background:var(--surf);border-radius:var(--r);border:1px solid var(--surf3)">
-            <span style="font-weight:600;font-size:.9rem">Status</span>
-            <span class="badge" id="dbStatusBadge">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;background:var(--surf);border-radius:var(--r);border:1px solid var(--surf3)">
-            <span style="font-weight:600;font-size:.9rem">Storage Mode</span>
-            <span class="badge badge-purple" id="dbModeBadge">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;background:var(--surf);border-radius:var(--r);border:1px solid var(--surf3)">
-            <span style="font-weight:600;font-size:.9rem">Total Reports</span>
-            <span class="badge badge-purple" id="dbCountBadge">—</span>
-          </div>
+        <h4 style="margin-bottom:.4rem"><i class="fas fa-key" style="color:var(--P)"></i> Change Admin Password</h4>
+        <p style="color:var(--ink3);font-size:.85rem;margin-bottom:1rem">Default is <code style="color:var(--P)">admin</code> — change it now.</p>
+        <div class="form-row" style="margin-bottom:.85rem">
+          <div class="fld"><label>Current Password</label><input type="password" id="curP" placeholder="Current"></div>
+          <div class="fld" style="display:none"></div>
+          <div class="fld"><label>New Password</label><input type="password" id="newP" placeholder="New (min 4 chars)"></div>
+          <div class="fld"><label>Confirm New</label><input type="password" id="newP2" placeholder="Repeat"></div>
         </div>
-        <div class="field" style="margin-bottom:1rem">
-          <label>JSONBin API Key (to reconfigure)</label>
-          <input type="password" id="newCfgKey" placeholder="Paste new key to replace existing">
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="changePwd()"><i class="fas fa-save"></i> Update Password</button>
         </div>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-          <button class="nav-btn btn-accent" onclick="reconnectDB()"><i class="fas fa-plug"></i> Reconnect</button>
-          <button class="nav-btn btn-danger" onclick="clearConfig()"><i class="fas fa-trash-alt"></i> Clear Config (go to setup)</button>
-        </div>
+        <hr style="margin:1.5rem 0;border:none;border-top:1.5px solid var(--border)">
+        <h4 style="margin-bottom:.4rem"><i class="fas fa-undo" style="color:var(--Y)"></i> Emergency Reset</h4>
+        <p style="color:var(--ink3);font-size:.85rem;margin-bottom:.85rem">Resets password back to <code style="color:var(--P)">admin</code>. Use only if locked out.</p>
+        <button class="btn btn-ghost" onclick="resetPwd()"><i class="fas fa-undo"></i> Reset to "admin"</button>
       </div>
     </div>
 
-    <!-- TAB: Security -->
-    <div class="tab-panel" id="tPwd">
+    <!-- Database -->
+    <div class="tp" id="tDB">
       <div class="card">
-        <h4 style="margin-bottom:.5rem"><i class="fas fa-key" style="color:var(--accent)"></i> Change Admin Password</h4>
-        <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem">Default password is <code style="color:var(--accent)">admin</code>. Change it immediately.</p>
-        <div class="form-grid" style="margin-bottom:1rem">
-          <div class="field"><label>Current Password</label><input type="password" id="curPwd" placeholder="Current password"></div>
-          <div style="display:none"></div>
-          <div class="field"><label>New Password</label><input type="password" id="newPwd" placeholder="New password (min 4 chars)"></div>
-          <div class="field"><label>Confirm New Password</label><input type="password" id="newPwd2" placeholder="Repeat new password"></div>
+        <h4 style="margin-bottom:1rem"><i class="fas fa-database" style="color:var(--P)"></i> Database Info</h4>
+        <div style="display:grid;gap:.6rem;margin-bottom:1.5rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:var(--bg2);border-radius:var(--r)"><span style="font-weight:600;font-size:.88rem">Status</span><span class="badge" id="dbSt">—</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:var(--bg2);border-radius:var(--r)"><span style="font-weight:600;font-size:.88rem">Mode</span><span class="badge b-p" id="dbMode">—</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:var(--bg2);border-radius:var(--r)"><span style="font-weight:600;font-size:.88rem">Firebase URL</span><span style="font-size:.78rem;color:var(--ink3);font-family:monospace" id="dbUrl">—</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:var(--bg2);border-radius:var(--r)"><span style="font-weight:600;font-size:.88rem">Total Records</span><span class="badge b-p" id="dbCount">0</span></div>
         </div>
-        <button class="nav-btn btn-accent" onclick="changePwd()"><i class="fas fa-save"></i> Update Password</button>
-        <hr style="margin:1.5rem 0;border-color:var(--surf3)">
-        <h4 style="margin-bottom:.5rem"><i class="fas fa-undo" style="color:var(--gold)"></i> Reset to Default</h4>
-        <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem">Resets admin password back to <code style="color:var(--accent)">admin</code>. Use if locked out.</p>
-        <button class="nav-btn btn-ghost" onclick="resetPwd()"><i class="fas fa-undo"></i> Reset to "admin"</button>
+        <div class="fld" style="margin-bottom:.85rem">
+          <label>Update Firebase URL (if changing project)</label>
+          <input type="url" id="newDbUrl" placeholder="https://new-project.firebaseio.com">
+        </div>
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="reconnect()"><i class="fas fa-plug"></i> Reconnect</button>
+          <button class="btn btn-r" onclick="clearCfg()"><i class="fas fa-trash-alt"></i> Clear Config</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL (view report) -->
-<div class="modal-overlay" id="reportModal" onclick="closeModal(event)">
-  <div class="modal-box" style="position:relative">
-    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-    <h4 style="margin-bottom:1rem"><i class="fas fa-file-alt" style="color:var(--accent)"></i> Report Details</h4>
-    <pre id="modalContent"></pre>
-    <div style="display:flex;gap:.75rem;margin-top:1rem">
-      <button class="nav-btn btn-accent" onclick="copyModalContent()"><i class="fas fa-copy"></i> Copy</button>
-    </div>
+<!-- ══ MODAL ══ -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:var(--bg3);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;color:var(--ink3);transition:var(--tr)" onmouseover="this.style.background='var(--R)';this.style.color='#fff'" onmouseout="this.style.background='var(--bg3)';this.style.color='var(--ink3)'"><i class="fas fa-times"></i></button>
+    <h4><i class="fas fa-file-alt" style="color:var(--P)"></i> Report Details</h4>
+    <pre id="modalPre"></pre>
+    <button class="btn btn-p btn-sm" style="margin-top:.85rem" onclick="cpModal()"><i class="fas fa-copy"></i> Copy</button>
   </div>
 </div>
 
-<!-- LOADER -->
-<div id="loader"><div class="loader-card"><div class="spinner"></div><div id="loaderTxt" style="font-weight:600">Processing…</div></div></div>
+<!-- ══ LOADER ══ -->
+<div id="loader"><div class="ld"><div class="spin"></div><div id="ldTxt" style="font-weight:600;font-size:.9rem">Processing…</div></div></div>
 
-<!-- TOAST -->
-<div id="toastArea"></div>
+<!-- ══ TOASTS ══ -->
+<div id="toasts"></div>
 
 <script>
-// =====================================================
-// CONSTANTS & STATE
-// =====================================================
-const PASS_KEY = 'srp_admin_pass';
-const CFG_KEY  = 'srp_cfg';
-const LOCAL_KEY = 'srp_local';
-const BIN_API  = 'https://api.jsonbin.io/v3';
+// ══════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════
+const CFG_K  = 'srp_fb_url';
+const PASS_K = 'srp_pass';
+const MODE_K = 'srp_mode';
+const NOTIF_K= 'srp_notif';
 
-let db = {
-  empBin: null, tlBin: null, empsBin: null, settingsBin: null,
-  apiKey: null, mode: 'local'
-};
-let isAdmin = false;
-let empCache = {};
-let allEmpReports = [];
-let allTLReports  = [];
-
-const FIXED = {
+const FIXED_ISSUES = {
   'Slow Issues':['slow','slow internet','speed issue','slow speed'],
   'Direct Call':['direct call'],'QC Call':['qc call'],
   'Solved':['solved','done','fixed'],
@@ -665,524 +679,468 @@ const FIXED = {
 };
 
 const DEFAULT_EMPS = [
-  {name:"Sujan Tarafdar",id:"Salt-S-063"},
-  {name:"Md Safikul Islam",id:"Salt-S-076"},
-  {name:"Sajid Hossain",id:"Salt-S-077"},
-  {name:"Md. Shamsur Rahman",id:"Salt-S-049"},
-  {name:"Md. Muhaimin Nabi",id:"Salt-S-094"},
-  {name:"Rony Bine",id:"Salt-S-096"},
-  {name:"MD Shakib",id:"Salt-S-080"},
-  {name:"GM Sakib",id:"Salt-S-087"}
+  {name:"Sujan Tarafdar",eid:"Salt-S-063"},
+  {name:"Md Safikul Islam",eid:"Salt-S-076"},
+  {name:"Sajid Hossain",eid:"Salt-S-077"},
+  {name:"Md. Shamsur Rahman",eid:"Salt-S-049"},
+  {name:"Md. Muhaimin Nabi",eid:"Salt-S-094"},
+  {name:"Rony Bine",eid:"Salt-S-096"},
+  {name:"MD Shakib",eid:"Salt-S-080"},
+  {name:"GM Sakib",eid:"Salt-S-087"}
 ];
 
-// =====================================================
+let DB_URL = '';          // Firebase base URL (no trailing slash)
+let CLOUD  = false;       // true when Firebase connected
+let IS_ADMIN = false;
+let empCache = {};        // {name: eid}
+let allER = [];           // all employee reports cache
+let allTL = [];           // all TL reports cache
+
+// ══════════════════════════════════════════════════════
 // BOOT
-// =====================================================
+// ══════════════════════════════════════════════════════
 window.onload = async () => {
   loadTheme();
-  updateBootTxt('Checking configuration…');
+  setBoot('Checking configuration…');
 
-  const cfg = getCfg();
-  const localMode = localStorage.getItem(LOCAL_KEY) === '1';
+  const url  = localStorage.getItem(CFG_K);
+  const mode = localStorage.getItem(MODE_K);
 
-  if (!cfg && !localMode) {
-    finishBoot(); goTo('setup'); setPill('err','Setup needed'); return;
+  if (!url && mode !== 'local') {
+    endBoot(); go('config'); setPill('err','Setup needed'); return;
   }
 
-  if (cfg) {
-    db.apiKey = cfg.key;
-    db.empBin = cfg.empBin;
-    db.tlBin  = cfg.tlBin;
-    db.empsBin = cfg.empsBin;
-    db.settingsBin = cfg.settingsBin;
-    db.mode = 'cloud';
-    updateBootTxt('Loading cloud data…');
+  if (url) {
+    DB_URL = url.replace(/\/+$/, '');
+    CLOUD  = true;
+    setBoot('Connecting to Firebase…');
     try {
-      await refreshEmpCache();
-      await loadNotif();
+      await fbGet('settings/ping');
       setPill('ok','Cloud Connected');
     } catch(e) {
-      setPill('err','Cloud Error');
-      toast('Cloud error: ' + e.message, 'err');
+      // First time — create initial data
+      try {
+        await fbSet('settings', { notification:'Welcome to SaltSync Report Pro! 🎉', adminPass:'admin', ping:1 });
+        await fbSet('employees', Object.fromEntries(DEFAULT_EMPS.map(e=>[slugify(e.name),e])));
+        setPill('ok','Cloud Connected');
+      } catch(e2) {
+        setPill('err','Firebase Error'); console.error(e2);
+      }
     }
   } else {
-    db.mode = 'local';
+    CLOUD = false;
     setPill('','Local Mode');
-    loadLocalEmps();
-    loadLocalNotif();
+    initLocalEmps();
   }
 
-  populateKw();
-  finishBoot();
-  goTo('dashboard');
+  setBoot('Loading data…');
+  await refreshEmpCache();
+  loadNotif();
+  buildKw();
+  endBoot();
+  go('dash');
 };
 
-function updateBootTxt(t){ document.getElementById('bootTxt').textContent = t; }
-function finishBoot(){
+function setBoot(t){ document.getElementById('bootSt').textContent = t; }
+function endBoot(){
   setTimeout(()=>{
-    const b = document.getElementById('bootScreen');
-    b.style.opacity = '0';
-    setTimeout(()=>b.style.display='none', 500);
-  }, 1600);
+    const b=document.getElementById('boot');
+    b.style.opacity='0';
+    setTimeout(()=>b.style.display='none',500);
+  },1400);
 }
 
-// =====================================================
-// CONFIG
-// =====================================================
-function getCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch{return null;} }
-function getAdminPass(){ return localStorage.getItem(PASS_KEY) || 'admin'; }
-
-// =====================================================
-// JSONBIN HELPERS
-// =====================================================
-async function jbCreate(data){
-  const r = await fetch(`${BIN_API}/b`, {
-    method:'POST',
-    headers:{'Content-Type':'application/json','X-Master-Key':db.apiKey,'X-Bin-Private':'false'},
-    body: JSON.stringify(data)
-  });
-  if(!r.ok) throw new Error(`Create bin failed: ${r.status}`);
+// ══════════════════════════════════════════════════════
+// FIREBASE REST API
+// ══════════════════════════════════════════════════════
+async function fbGet(path){
+  const r = await fetch(`${DB_URL}/${path}.json`);
+  if(!r.ok) throw new Error(`GET ${path} → ${r.status}`);
+  return r.json();
+}
+async function fbSet(path, data){
+  const r = await fetch(`${DB_URL}/${path}.json`,{method:'PUT',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  if(!r.ok) throw new Error(`SET ${path} → ${r.status}`);
+  return r.json();
+}
+async function fbPush(path, data){
+  const r = await fetch(`${DB_URL}/${path}.json`,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  if(!r.ok) throw new Error(`PUSH ${path} → ${r.status}`);
   const j = await r.json();
-  return j.metadata.id;
+  return j.name; // Firebase push ID
+}
+async function fbDelete(path){
+  const r = await fetch(`${DB_URL}/${path}.json`,{method:'DELETE'});
+  if(!r.ok) throw new Error(`DEL ${path} → ${r.status}`);
+}
+async function fbPatch(path, data){
+  const r = await fetch(`${DB_URL}/${path}.json`,{method:'PATCH',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  if(!r.ok) throw new Error(`PATCH ${path} → ${r.status}`);
 }
 
-async function jbRead(binId){
-  const r = await fetch(`${BIN_API}/b/${binId}/latest`, {
-    headers:{'X-Master-Key':db.apiKey}
-  });
-  if(!r.ok) throw new Error(`Read bin failed: ${r.status}`);
-  const j = await r.json();
-  return j.record;
-}
+function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,'-'); }
 
-async function jbWrite(binId, data){
-  const r = await fetch(`${BIN_API}/b/${binId}`, {
-    method:'PUT',
-    headers:{'Content-Type':'application/json','X-Master-Key':db.apiKey},
-    body: JSON.stringify(data)
-  });
-  if(!r.ok) throw new Error(`Write bin failed: ${r.status}`);
-}
-
-// =====================================================
+// ══════════════════════════════════════════════════════
 // SETUP
-// =====================================================
-async function setupCloud(){
-  const key = g('cfgKey').trim();
-  if(!key){ toast('Please enter your JSONBin API key','err'); return; }
-  load('Creating cloud storage bins…');
+// ══════════════════════════════════════════════════════
+async function doSetup(){
+  const url = v('cfgUrl').trim().replace(/\/+$/,'');
+  if(!url){ toast('Enter Firebase URL','err'); return; }
+  ld('Connecting to Firebase…');
   try {
-    db.apiKey = key;
-    // Create 4 bins
-    const empBin      = await jbCreate({reports:[]});
-    const tlBin       = await jbCreate({reports:[]});
-    const empsBin     = await jbCreate({employees: DEFAULT_EMPS});
-    const settingsBin = await jbCreate({notification:'Welcome to SaltSync Report Pro! 🎉', adminPass:'admin'});
+    // Test write
+    await fetch(`${url}/settings.json`,{method:'PUT',body:JSON.stringify({notification:'Welcome to SaltSync Report Pro! 🎉',adminPass:'admin',ping:1}),headers:{'Content-Type':'application/json'}});
+    // Seed employees
+    const emps = {};
+    DEFAULT_EMPS.forEach(e=>{ emps[slugify(e.name)]=e; });
+    await fetch(`${url}/employees.json`,{method:'PUT',body:JSON.stringify(emps),headers:{'Content-Type':'application/json'}});
 
-    const cfg = {key, empBin, tlBin, empsBin, settingsBin};
-    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-    localStorage.removeItem(LOCAL_KEY);
-    hideLoad();
-    toast('Cloud connected! Reloading…');
-    setTimeout(()=>location.reload(), 1200);
-  } catch(e) {
-    hideLoad();
-    toast('Setup failed: ' + e.message, 'err');
-  }
+    localStorage.setItem(CFG_K, url);
+    localStorage.removeItem(MODE_K);
+    hideLD(); toast('Connected! Loading app…');
+    setTimeout(()=>location.reload(),1000);
+  } catch(e){ hideLD(); toast('Connection failed: '+e.message,'err'); }
 }
 
 function useLocal(){
-  localStorage.setItem(LOCAL_KEY,'1');
-  localStorage.removeItem(CFG_KEY);
+  localStorage.setItem(MODE_K,'local');
+  localStorage.removeItem(CFG_K);
   location.reload();
 }
 
-// =====================================================
-// DATA LAYER — EMPLOYEES
-// =====================================================
+// ══════════════════════════════════════════════════════
+// EMPLOYEES
+// ══════════════════════════════════════════════════════
+function initLocalEmps(){
+  try{ empCache=JSON.parse(localStorage.getItem('srp_emps')||'{}'); }catch{empCache={};}
+  if(!Object.keys(empCache).length){ DEFAULT_EMPS.forEach(e=>{empCache[e.name]=e.eid;}); saveLocalEmps(); }
+}
+function saveLocalEmps(){ localStorage.setItem('srp_emps',JSON.stringify(empCache)); }
+
 async function refreshEmpCache(){
-  if(db.mode==='cloud'){
-    const d = await jbRead(db.empsBin);
-    empCache = {};
-    (d.employees||[]).forEach(e=>{ empCache[e.name]=e.id; });
-  } else {
-    loadLocalEmps();
-  }
+  if(CLOUD){
+    const d = await fbGet('employees');
+    empCache={};
+    if(d) Object.values(d).forEach(e=>{ empCache[e.name]=e.eid; });
+  } else { initLocalEmps(); }
+  populateEmpDropdowns();
 }
 
-function loadLocalEmps(){
-  try{ empCache = JSON.parse(localStorage.getItem('srp_emps')||'{}'); }catch{ empCache={}; }
-  if(!Object.keys(empCache).length){
-    DEFAULT_EMPS.forEach(e=>{ empCache[e.name]=e.id; });
-    saveLocalEmps();
-  }
+function populateEmpDropdowns(){
+  const names = Object.keys(empCache).sort();
+  ['eNameSel','portalSel'].forEach(id=>{
+    const s=document.getElementById(id);
+    if(!s)return;
+    const was = s.value;
+    s.innerHTML='<option value="">— Select —</option>';
+    names.forEach(n=>s.innerHTML+=`<option value="${n}"${n===was?' selected':''}>${n}</option>`);
+  });
 }
 
-function saveLocalEmps(){
-  localStorage.setItem('srp_emps', JSON.stringify(empCache));
+async function addEmp(){
+  const name=v('nEName').trim(), eid=v('nEId').trim();
+  if(!name||!eid){toast('Enter both name and ID','err');return;}
+  if(empCache[name]){toast('Employee already exists','err');return;}
+  ld('Adding…');
+  try{
+    if(CLOUD){ await fbPatch('employees',{[slugify(name)]:{name,eid}}); }
+    empCache[name]=eid;
+    if(!CLOUD) saveLocalEmps();
+    sv('nEName',''); sv('nEId','');
+    await loadEmpMgmt();
+    populateEmpDropdowns();
+    hideLD(); toast(name+' added!');
+  } catch(e){ hideLD(); toast(e.message,'err'); }
 }
 
-async function addEmpToDB(name, id){
-  if(db.mode==='cloud'){
-    const d = await jbRead(db.empsBin);
-    d.employees = d.employees || [];
-    if(d.employees.find(e=>e.name===name)) throw new Error('Employee already exists');
-    d.employees.push({name,id});
-    await jbWrite(db.empsBin, d);
-  } else {
-    if(empCache[name]) throw new Error('Employee already exists');
-    empCache[name]=id; saveLocalEmps();
-  }
-  empCache[name]=id;
+async function removeEmp(name){
+  if(!confirm('Remove '+name+'?')) return;
+  ld('Removing…');
+  try{
+    if(CLOUD){ await fbDelete('employees/'+slugify(name)); }
+    delete empCache[name];
+    if(!CLOUD) saveLocalEmps();
+    await loadEmpMgmt();
+    populateEmpDropdowns();
+    hideLD(); toast(name+' removed');
+  } catch(e){ hideLD(); toast(e.message,'err'); }
 }
 
-async function removeEmpFromDB(name){
-  if(db.mode==='cloud'){
-    const d = await jbRead(db.empsBin);
-    d.employees = (d.employees||[]).filter(e=>e.name!==name);
-    await jbWrite(db.empsBin, d);
-  } else {
-    delete empCache[name]; saveLocalEmps();
-  }
-  delete empCache[name];
-}
-
-// =====================================================
-// DATA LAYER — REPORTS
-// =====================================================
-async function saveEmpReport(report){
-  if(db.mode==='cloud'){
-    const d = await jbRead(db.empBin);
-    d.reports = d.reports||[];
-    report.id = Date.now().toString()+Math.random().toString(36).slice(2,6);
-    d.reports.unshift(report);
-    await jbWrite(db.empBin, d);
-  } else {
-    const arr = getLocal('srp_emp_rep');
-    report.id = Date.now().toString()+Math.random().toString(36).slice(2,6);
-    arr.unshift(report);
-    saveLocal('srp_emp_rep', arr);
-  }
-}
-
-async function saveTLReport(report){
-  if(db.mode==='cloud'){
-    const d = await jbRead(db.tlBin);
-    d.reports = d.reports||[];
-    report.id = Date.now().toString()+Math.random().toString(36).slice(2,6);
-    d.reports.unshift(report);
-    await jbWrite(db.tlBin, d);
-  } else {
-    const arr = getLocal('srp_tl_rep');
-    report.id = Date.now().toString()+Math.random().toString(36).slice(2,6);
-    arr.unshift(report);
-    saveLocal('srp_tl_rep', arr);
-  }
-}
-
-async function fetchAllEmpReports(){
-  if(db.mode==='cloud'){ const d=await jbRead(db.empBin); return d.reports||[]; }
-  return getLocal('srp_emp_rep');
-}
-
-async function fetchAllTLReports(){
-  if(db.mode==='cloud'){ const d=await jbRead(db.tlBin); return d.reports||[]; }
-  return getLocal('srp_tl_rep');
-}
-
-async function deleteReport(type, id){
-  if(db.mode==='cloud'){
-    const binId = type==='emp'?db.empBin:db.tlBin;
-    const d = await jbRead(binId);
-    d.reports = (d.reports||[]).filter(r=>r.id!==id);
-    await jbWrite(binId,d);
-  } else {
-    const key = type==='emp'?'srp_emp_rep':'srp_tl_rep';
-    saveLocal(key, getLocal(key).filter(r=>r.id!==id));
-  }
-}
-
-// =====================================================
-// DATA LAYER — SETTINGS (Notification & Admin Pass)
-// =====================================================
-async function getSettings(){
-  if(db.mode==='cloud'){ return await jbRead(db.settingsBin); }
-  return {
-    notification: localStorage.getItem('srp_notif')||'Welcome to SaltSync Report Pro! 🎉',
-    adminPass: getAdminPass()
-  };
-}
-
-async function saveSettings(patch){
-  if(db.mode==='cloud'){
-    const d = await jbRead(db.settingsBin);
-    Object.assign(d, patch);
-    await jbWrite(db.settingsBin, d);
-  }
-  if(patch.notification) localStorage.setItem('srp_notif', patch.notification);
-  if(patch.adminPass)    localStorage.setItem(PASS_KEY, patch.adminPass);
-}
-
-// =====================================================
+// ══════════════════════════════════════════════════════
 // NOTIFICATION
-// =====================================================
+// ══════════════════════════════════════════════════════
 async function loadNotif(){
-  const s = await getSettings();
-  document.getElementById('notifTxt').textContent = s.notification || 'Welcome!';
-  // Also sync admin pass from cloud
-  if(s.adminPass) localStorage.setItem(PASS_KEY, s.adminPass);
+  let txt = localStorage.getItem(NOTIF_K)||'Welcome to SaltSync Report Pro! 🎉';
+  if(CLOUD){
+    try{ const s=await fbGet('settings'); txt=s.notification||txt; }catch{}
+  }
+  document.getElementById('notifTxt').textContent=txt;
+  localStorage.setItem(NOTIF_K, txt);
 }
 
-function loadLocalNotif(){
-  document.getElementById('notifTxt').textContent =
-    localStorage.getItem('srp_notif') || 'Welcome to SaltSync Report Pro! 🎉';
+async function saveNotif(){
+  const txt=v('notifInp').trim();
+  if(!txt){toast('Enter text','err');return;}
+  ld('Saving…');
+  try{
+    if(CLOUD) await fbPatch('settings',{notification:txt});
+    localStorage.setItem(NOTIF_K,txt);
+    document.getElementById('notifTxt').textContent=txt;
+    hideLD(); toast('Notification published!');
+  } catch(e){ hideLD(); toast(e.message,'err'); }
+}
+function previewNotif(){
+  document.getElementById('notifTxt').textContent=v('notifInp')||'(empty)';
+  toast('Previewing in banner','info');
 }
 
-// =====================================================
+// ══════════════════════════════════════════════════════
+// ADMIN PASSWORD
+// ══════════════════════════════════════════════════════
+function getAdminPass(){ return localStorage.getItem(PASS_K)||'admin'; }
+
+async function syncAdminPass(){
+  if(CLOUD){
+    try{ const s=await fbGet('settings'); if(s.adminPass) localStorage.setItem(PASS_K,s.adminPass); }catch{}
+  }
+}
+
+async function changePwd(){
+  const cur=v('curP'), np=v('newP'), np2=v('newP2');
+  if(cur!==getAdminPass()){toast('Current password wrong','err');return;}
+  if(np.length<4){toast('Min 4 characters','err');return;}
+  if(np!==np2){toast("Passwords don't match",'err');return;}
+  ld('Updating…');
+  try{
+    if(CLOUD) await fbPatch('settings',{adminPass:np});
+    localStorage.setItem(PASS_K,np);
+    sv('curP','');sv('newP','');sv('newP2','');
+    hideLD(); toast('Password updated!');
+  } catch(e){ hideLD(); toast(e.message,'err'); }
+}
+
+async function resetPwd(){
+  if(!confirm('Reset password to "admin"?')) return;
+  ld('Resetting…');
+  try{
+    if(CLOUD) await fbPatch('settings',{adminPass:'admin'});
+    localStorage.setItem(PASS_K,'admin');
+    hideLD(); toast('Password reset to "admin"');
+  } catch(e){ hideLD(); toast(e.message,'err'); }
+}
+
+// ══════════════════════════════════════════════════════
 // NAVIGATION
-// =====================================================
-const PAGES = {
-  setup:'pageSetup', dashboard:'pageDashboard', empReport:'pageEmpReport',
-  tlReport:'pageTlReport', empPortal:'pageEmpPortal',
-  adminGate:'pageAdminGate', admin:'pageAdmin'
+// ══════════════════════════════════════════════════════
+const PAGE_MAP = {
+  config:'pConfig',dash:'pDash',empRep:'pEmpRep',
+  tlRep:'pTlRep',portal:'pPortal',adminGate:'pAdminGate',admin:'pAdmin'
 };
 
-function goTo(name){
-  Object.values(PAGES).forEach(id=>{
+function go(name){
+  Object.values(PAGE_MAP).forEach(id=>{
     const el=document.getElementById(id);
-    if(el){ el.classList.remove('active'); el.style.display='none'; }
+    if(el){el.classList.remove('on');el.style.display='none';}
   });
-  const pg = document.getElementById(PAGES[name]);
-  if(!pg) return;
-  pg.style.display = ['setup','adminGate'].includes(name) ? 'flex' : 'block';
-  setTimeout(()=>pg.classList.add('active'),10);
+  const pg=document.getElementById(PAGE_MAP[name]);
+  if(!pg)return;
+  const isFlex=['config','adminGate'].includes(name);
+  pg.style.display=isFlex?'flex':'block';
+  setTimeout(()=>pg.classList.add('on'),10);
 
-  if(name==='empReport') initEmpForm();
-  if(name==='tlReport')  initTLForm();
-  if(name==='empPortal') initPortal();
-  if(name==='admin') loadAdminPanel();
+  if(name==='empRep') initEmpForm();
+  if(name==='tlRep')  initTLForm();
+  if(name==='portal') initPortal();
+  if(name==='admin')  loadAdmin();
 }
 
 function showAdminGate(){
-  if(isAdmin){ goTo('admin'); return; }
-  document.getElementById('adminPassInput').value='';
+  if(IS_ADMIN){go('admin');return;}
+  sv('aPass','');
   document.getElementById('loginErr').style.display='none';
-  goTo('adminGate');
+  resetLock();
+  go('adminGate');
 }
 
-function adminLogout(){
-  isAdmin=false;
-  toast('Logged out successfully','info');
-  goTo('dashboard');
-}
+function doLogout(){ IS_ADMIN=false; toast('Logged out','info'); go('dash'); }
 
-// =====================================================
-// ADMIN LOGIN (STRONG)
-// =====================================================
-function tryLogin(){
-  const pass = document.getElementById('adminPassInput').value;
-  const correct = getAdminPass();
-  if(pass === correct){
-    isAdmin = true;
-    document.getElementById('lockIcon').innerHTML='<i class="fas fa-unlock"></i>';
-    document.getElementById('lockIcon').style.background='linear-gradient(135deg,var(--green),var(--tl))';
-    toast('Welcome, Admin!');
-    setTimeout(()=>{ goTo('admin'); resetLockIcon(); }, 600);
+// ══════════════════════════════════════════════════════
+// ADMIN LOGIN
+// ══════════════════════════════════════════════════════
+async function doLogin(){
+  await syncAdminPass();
+  const pass=v('aPass');
+  if(pass===getAdminPass()){
+    IS_ADMIN=true;
+    setLock('good','fa-unlock-alt');
+    setTimeout(()=>{go('admin');resetLock();},600);
   } else {
+    setLock('bad','fa-lock');
     document.getElementById('loginErr').style.display='block';
     document.getElementById('loginErrTxt').textContent='Wrong password. Try again.';
-    document.getElementById('adminPassInput').value='';
-    const card=document.querySelector('.login-wrap .card');
-    card.classList.add('shake');
-    setTimeout(()=>card.classList.remove('shake'),400);
-    document.getElementById('lockIcon').style.background='linear-gradient(135deg,var(--red),#ff7090)';
-    setTimeout(()=>resetLockIcon(),1000);
+    sv('aPass','');
+    document.getElementById('loginCard').classList.add('shake');
+    setTimeout(()=>{document.getElementById('loginCard').classList.remove('shake');setLock('locked','fa-lock');},500);
   }
 }
 
-function resetLockIcon(){
-  document.getElementById('lockIcon').innerHTML='<i class="fas fa-lock"></i>';
-  document.getElementById('lockIcon').style.background='linear-gradient(135deg,var(--accent),var(--accent2))';
+function setLock(cls,icon){
+  const el=document.getElementById('lockIco');
+  el.className='lock-wrap '+cls;
+  el.innerHTML=`<i class="fas ${icon}"></i>`;
 }
+function resetLock(){ setLock('locked','fa-lock'); }
 
-// =====================================================
+// ══════════════════════════════════════════════════════
 // EMPLOYEE REPORT FORM
-// =====================================================
+// ══════════════════════════════════════════════════════
 async function initEmpForm(){
-  document.getElementById('eDate').valueAsDate = new Date();
-  const out = document.getElementById('eReportOut');
+  document.getElementById('eDate').valueAsDate=new Date();
+  const out=document.getElementById('eOut');
   out.classList.remove('show'); out.style.display='none';
   await refreshEmpCache();
-  const sel = document.getElementById('eNameSel');
-  sel.innerHTML='<option value="">— Select Employee —</option>';
-  Object.keys(empCache).sort().forEach(n=>{
-    sel.innerHTML+=`<option value="${n}">${n}</option>`;
-  });
-  // Also populate portal
-  const ps = document.getElementById('portalName');
-  ps.innerHTML='<option value="">— Select your name —</option>';
-  Object.keys(empCache).sort().forEach(n=>{
-    ps.innerHTML+=`<option value="${n}">${n}</option>`;
-  });
 }
 
 function fillEmp(){
-  const n=g('eNameSel');
-  if(n&&empCache[n]){ sv('eName',n); sv('eId',empCache[n]); }
+  const n=v('eNameSel');
+  if(n&&empCache[n]){sv('eName',n);sv('eId',empCache[n]);}
 }
 
 function prevPhys(){
-  const p=parseInt(g('ePhys'))||0;
-  document.getElementById('physAlert').innerHTML = p>0
-    ? `<div style="margin-top:.6rem;padding:.6rem .9rem;background:rgba(108,71,255,.1);border-radius:var(--r);font-size:.83rem;color:var(--accent)"><i class="fas fa-info-circle"></i> Adds <b>+${p}</b> to Total Received & Solved.</div>`
-    : '';
+  const p=parseInt(v('ePhys'))||0;
+  document.getElementById('physNote').innerHTML=p>0
+    ?`<div style="margin-top:.55rem;padding:.55rem .8rem;background:rgba(92,53,232,.08);border-radius:var(--r);font-size:.8rem;color:var(--P)"><i class="fas fa-info-circle"></i> +${p} added to Total Received & Solved</div>`
+    :'';
 }
 
-async function genEmpReport(){
-  const date=g('eDate'), name=g('eName').trim(), id=g('eId').trim();
-  const shift=g('eShift');
-  const issues=g('eIssues').trim().split('\n').filter(l=>l.trim());
-  const special=g('eSpecial').trim();
-  const phys=parseInt(g('ePhys'))||0;
-  const proc=g('eSS').trim().split(/\r?\n/).map(l=>l.replace(/"/g,'').trim()).filter(l=>l);
+async function genEmp(){
+  const date=v('eDate'),name=v('eName').trim(),eid=v('eId').trim();
+  const shift=v('eShift');
+  const issues=v('eIssues').trim().split('\n').filter(l=>l.trim());
+  const special=v('eSpecial').trim();
+  const phys=parseInt(v('ePhys'))||0;
+  const proc=v('eSS').trim().split(/\r?\n/).map(l=>l.replace(/"/g,'').trim()).filter(l=>l);
 
-  if(!shift){ toast('Please select a shift','err'); return; }
-  if(!name||!id){ toast('Select or fill in employee name','err'); return; }
-  if(!issues.length&&!phys){ toast('Enter at least one issue or physical count','err'); return; }
+  if(!shift){toast('Select a shift','err');return;}
+  if(!name||!eid){toast('Select employee name','err');return;}
+  if(!issues.length&&!phys){toast('Enter at least one issue','err');return;}
 
-  load('Generating report…');
+  ld('Generating report…');
   let rd=new Date(date);
-  if(shift==='Night') rd.setDate(rd.getDate()-1);
+  if(shift==='Night')rd.setDate(rd.getDate()-1);
   const df=rd.toLocaleDateString('en-GB').replace(/\//g,'.');
 
   const ic={};
-  issues.forEach(iss=>{const k=iss.toLowerCase().trim(); ic[k]=(ic[k]||0)+1;});
+  issues.forEach(i=>{const k=i.toLowerCase().trim();ic[k]=(ic[k]||0)+1;});
   const uniq={};
-  issues.forEach(i=>{const k=i.toLowerCase().trim(); if(!uniq[k])uniq[k]=i;});
+  issues.forEach(i=>{const k=i.toLowerCase().trim();if(!uniq[k])uniq[k]=i;});
 
-  const totalRec=issues.length+phys, procCnt=proc.length, totalSolv=totalRec-procCnt;
-  let r=`Employee Name: ${name}\nEmployee ID: ${id}\nDate: ${df}\nDuty Shift: ${shift}\n`;
-  r+=`Total Issues Received: ${totalRec}\nTotal Issues Solved: ${totalSolv}\n`;
+  const totalRec=issues.length+phys,procCnt=proc.length,solved=totalRec-procCnt;
+  let r=`Employee Name: ${name}\nEmployee ID: ${eid}\nDate: ${df}\nDuty Shift: ${shift}\n`;
+  r+=`Total Issues Received: ${totalRec}\nTotal Issues Solved: ${solved}\n`;
   r+=procCnt>0?`Total Issues Processing: ${procCnt} ( ${proc.join(' ')} )\n`:`Total Issues Processing: 0\n`;
   r+=`\n------* Type of Issues *------\n`;
-  for(const k in ic) r+=`${uniq[k]}: ${ic[k]}\n`;
-  if(phys>0) r+=`Physical Support: ${phys}\n`;
-  if(special) r+=`\n★ Special Task/NOTE:\n${special}\n`;
+  for(const k in ic)r+=`${uniq[k]}: ${ic[k]}\n`;
+  if(phys>0)r+=`Physical Support: ${phys}\n`;
+  if(special)r+=`\n★ Special Task/NOTE:\n${special}\n`;
 
-  const out=document.getElementById('eReportOut');
-  out.textContent=r; out.style.display='block'; out.classList.add('show');
+  document.getElementById('eOutPre').textContent=r;
+  const out=document.getElementById('eOut');
+  out.style.display='block';out.classList.add('show');
 
-  try {
-    await saveEmpReport({
-      date:df, name, employee_id:id, shift,
-      issues:totalRec, physical_support:phys, regular_issues:issues.length,
-      processing:procCnt, solved:totalSolv, special_task:special, report_content:r
-    });
+  const row={date:df,name,employee_id:eid,shift,issues:totalRec,physical_support:phys,
+             regular_issues:issues.length,processing:procCnt,solved,special_task:special,
+             report_content:r,ts:Date.now()};
+  try{
+    if(CLOUD) await fbPush('emp_reports',row);
+    else { const a=getLS('srp_er');a.unshift({...row,id:Date.now().toString()});setLS('srp_er',a); }
     toast('Report saved to cloud ☁️');
-  } catch(e){ toast('Save failed: '+e.message,'err'); }
-  hideLoad();
+  } catch(e){ toast('Save error: '+e.message,'err'); }
+  hideLD();
 }
 
-// =====================================================
-// TL REPORT FORM
-// =====================================================
+// ══════════════════════════════════════════════════════
+// TL REPORT
+// ══════════════════════════════════════════════════════
 function initTLForm(){
   document.getElementById('tDate').valueAsDate=new Date();
-  const out=document.getElementById('tReportOut');
-  out.classList.remove('show'); out.style.display='none';
-  populateKw();
-  updateOv();
-  updatePhysPrev();
+  const out=document.getElementById('tOut');
+  out.classList.remove('show');out.style.display='none';
+  buildKw();updateOv();updatePhys();
 }
 
-function normalise(t){
-  if(!t) return 'UNKNOWN';
-  const low=t.toLowerCase();
-  for(const[cat,kws] of Object.entries(FIXED)){
-    if(kws.some(k=>low.includes(k))) return cat;
-  }
-  return low.trim();
+function norm(t){
+  if(!t)return'UNKNOWN';
+  const lo=t.toLowerCase();
+  for(const[cat,kws]of Object.entries(FIXED_ISSUES)){if(kws.some(k=>lo.includes(k)))return cat;}
+  return lo.trim();
 }
-
 function getCounts(list){
-  const c={};
-  Object.keys(FIXED).forEach(cat=>c[cat]=0);
-  list.forEach(t=>{const n=normalise(t);if(c[n]!==undefined)c[n]++;});
+  const c={};Object.keys(FIXED_ISSUES).forEach(cat=>c[cat]=0);
+  list.forEach(t=>{const n=norm(t);if(c[n]!==undefined)c[n]++;});
   return c;
 }
 
-function populateKw(){
-  const el=document.getElementById('kw');
-  if(!el)return;
+function buildKw(){
+  const el=document.getElementById('kwList');if(!el)return;
   let h='';
-  for(const[cat,kws] of Object.entries(FIXED)){
-    h+=`<div style="margin-bottom:.4rem"><b style="font-size:.8rem">${cat}:</b> ${kws.map(k=>`<span class="chip">${k}</span>`).join('')}</div>`;
+  for(const[cat,kws]of Object.entries(FIXED_ISSUES)){
+    h+=`<div style="margin-bottom:.3rem"><b style="font-size:.75rem">${cat}:</b> ${kws.map(k=>`<span class="chip">${k}</span>`).join('')}</div>`;
   }
   el.innerHTML=h;
 }
 
 function updateOv(){
-  const lines=g('tIssues').split('\n').map(l=>l.trim()).filter(l=>l);
+  const lines=v('tIssues').split('\n').map(l=>l.trim()).filter(l=>l);
   const counts=getCounts(lines);
-  const list=document.getElementById('tlOvList');
-  const badge=document.getElementById('ovBadge');
+  const list=document.getElementById('tlOvList'),badge=document.getElementById('ovBadge');
   const rep=Object.entries(counts).filter(([,c])=>c>=3);
   badge.textContent=`${rep.length} repeated`;
-  badge.className='badge '+(rep.length>5?'badge-red':rep.length>0?'badge-teal':'badge-gray');
-  if(!rep.length){
-    list.innerHTML=`<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.88rem"><i class="fas fa-check-circle"></i> No repeated issues yet (need ≥3)</div>`;
-    return;
-  }
+  badge.className='badge '+(rep.length>5?'b-r':rep.length>0?'b-t':'b-gray');
+  if(!rep.length){list.innerHTML=`<div style="text-align:center;padding:1.2rem;color:var(--ink3);font-size:.82rem"><i class="fas fa-check-circle"></i> No repeated issues yet</div>`;return;}
   list.innerHTML=rep.map(([cat,cnt])=>{
-    const cls=cnt>=10?'critical':cnt>=5?'high':'';
-    return `<div class="ov-item ${cls}"><span style="font-weight:600;font-size:.9rem">${cat}</span><span class="ov-count ${cls}">×${cnt}</span></div>`;
+    const cls=cnt>=10?'crit':cnt>=5?'hi':'';
+    return `<div class="ov-row ${cls}"><span style="font-weight:600;font-size:.88rem">${cat}</span><span class="ov-cnt">×${cnt}</span></div>`;
   }).join('');
 }
 
-function updatePhysPrev(){
-  const lines=g('tPhys').split('\n').map(l=>l.trim()).filter(l=>l);
-  const prev=document.getElementById('physPrev');
-  if(!lines.length){prev.style.display='none';return;}
+function updatePhys(){
+  const lines=v('tPhys').split('\n').map(l=>l.trim()).filter(l=>l);
+  const s=document.getElementById('physSum');
+  if(!lines.length){s.style.display='none';return;}
   let comp=0,shift=0,cancel=0;
-  lines.forEach(l=>{
-    const t=l.toLowerCase();
+  lines.forEach(l=>{const t=l.toLowerCase();
     if(t.includes('done')||t.includes('complete')||t.includes('fixed')||t.includes('solved'))comp++;
     else if(t.includes('shift')||t.includes('next day')||t.includes('pending'))shift++;
     else if(t.includes('cancel'))cancel++;
   });
   document.getElementById('physGrid').innerHTML=
-    physCard(lines.length,'Total','var(--accent)')+physCard(comp,'Complete','var(--green)')+
-    physCard(shift,'Shift','var(--gold)')+physCard(cancel,'Cancel','var(--red)');
-  prev.style.display='block';
+    pBox(lines.length,'Total','var(--P)')+pBox(comp,'Complete','var(--G)')+pBox(shift,'Shift','var(--Y)')+pBox(cancel,'Cancel','var(--R)');
+  s.style.display='block';
 }
+function pBox(n,l,c){return`<div class="phys-box"><div class="phys-v" style="color:${c}">${n}</div><div class="phys-l">${l}</div></div>`;}
 
-function physCard(n,l,c){
-  return `<div class="phys-card"><div class="phys-val" style="color:${c}">${n}</div><div class="phys-lbl">${l}</div></div>`;
-}
-
-async function genTLReport(){
-  const date=g('tDate'), tlName=g('tName'), shift=g('tShift');
-  const issues=g('tIssues').trim().split('\n').filter(l=>l.trim());
-  const physLines=g('tPhys').trim().split('\n').filter(l=>l.trim());
-  const persons=g('tPersons').trim()||'Sakib + labib + Sujan';
-  const proc=g('tSS').trim().split(/\r?\n/).map(l=>l.replace(/"/g,'').trim()).filter(l=>l);
+async function genTL(){
+  const date=v('tDate'),tlName=v('tName'),shift=v('tShift');
+  const issues=v('tIssues').trim().split('\n').filter(l=>l.trim());
+  const physLines=v('tPhys').trim().split('\n').filter(l=>l.trim());
+  const persons=v('tPersons').trim()||'Sakib + labib + Sujan';
+  const proc=v('tSS').trim().split(/\r?\n/).map(l=>l.replace(/"/g,'').trim()).filter(l=>l);
 
   if(!shift){toast('Select a shift','err');return;}
   if(!tlName){toast('Select TL name','err');return;}
 
-  load('Generating TL report…');
+  ld('Generating TL report…');
   let comp=0,shiftC=0,cancel=0;
-  physLines.forEach(l=>{
-    const t=l.toLowerCase();
+  physLines.forEach(l=>{const t=l.toLowerCase();
     if(t.includes('done')||t.includes('complete')||t.includes('fixed')||t.includes('solved'))comp++;
     else if(t.includes('shift')||t.includes('next day')||t.includes('pending'))shiftC++;
     else if(t.includes('cancel'))cancel++;
   });
-
   const counts=getCounts(issues);
-  const remRec=issues.length, procCnt=proc.length, remSolv=remRec-procCnt;
+  const remRec=issues.length,procCnt=proc.length,remSolv=remRec-procCnt;
   const df=new Date(date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  const st=shift.includes('9:00AM to 6:30PM')?'9:00AM to 6:30PM':shift.includes('9:00AM to 9:00AM')?'9:00AM to 9:00AM':shift;
+  const st=shift.includes('6:30PM')?'9:00AM to 6:30PM':shift.includes('9:00AM to 9:00AM')?'9:00AM to 9:00AM':shift;
 
   let r=`Report: ${df} (${st})\n=============\nRemotely Support>>\n`;
   r+=`Total Issue Rec: ${remRec}\nTotal Issue Solve: ${remSolv}\n`;
@@ -1195,354 +1153,255 @@ async function genTLReport(){
   let cbk=issues.filter(i=>i.toLowerCase().includes('call back')).length;
   let any=false;
   disp.forEach(cat=>{
-    const c=counts[cat]||0; if(!c)return;
+    const c=counts[cat]||0;if(!c)return;
     const n=cat==='Site Browsing Issue'?'site browsing issue':cat==='No Internet'?'No internet':cat;
-    r+=`${n}: ${c}\n`; any=true;
+    r+=`${n}: ${c}\n`;any=true;
   });
   if(cbk>0){r+=`call back: ${cbk}\n`;any=true;}
-  if(!any&&remRec>0) r+=`Issues: ${remRec}\n`;
+  if(!any&&remRec>0)r+=`Issues: ${remRec}\n`;
   r+=`Remotely Solved. Details in task.\n\n`;
 
-  const contacts={
-    'Safikul Islam':{email:'safikul@saltsync.com',phone:'01901041903'},
-    'S.M Faisal':{email:'faisal@saltsync.com',phone:'01901041901'}
-  };
-  if(contacts[tlName]){
-    const c=contacts[tlName];
-    r+=`Reported by ${tlName}\nIf you have any query, please knock me anytime.\nEmail: ${c.email}\nCall: ${c.phone}\n-Thanks.\n`;
-  }
+  const contacts={'Safikul Islam':{email:'safikul@saltsync.com',phone:'01901041903'},'S.M Faisal':{email:'faisal@saltsync.com',phone:'01901041901'}};
+  if(contacts[tlName]){const c=contacts[tlName];r+=`Reported by ${tlName}\nEmail: ${c.email}\nCall: ${c.phone}\n-Thanks.\n`;}
 
-  const out=document.getElementById('tReportOut');
-  out.textContent=r; out.style.display='block'; out.classList.add('show');
+  document.getElementById('tOutPre').textContent=r;
+  const out=document.getElementById('tOut');out.style.display='block';out.classList.add('show');
 
+  const row={date:df,tl_name:tlName,shift,issues:remRec,solved:remSolv,processing:procCnt,
+             physical_total:physLines.length,physical_complete:comp,physical_shift:shiftC,
+             physical_cancel:cancel,processing_persons:persons,report_content:r,ts:Date.now()};
   try{
-    await saveTLReport({
-      date:df, tl_name:tlName, shift, issues:remRec, solved:remSolv, processing:procCnt,
-      physical_total:physLines.length, physical_complete:comp, physical_shift:shiftC,
-      physical_cancel:cancel, processing_persons:persons, report_content:r
-    });
-    toast('TL Report saved to cloud ☁️');
-  } catch(e){ toast('Save failed: '+e.message,'err'); }
-  hideLoad();
+    if(CLOUD) await fbPush('tl_reports',row);
+    else{const a=getLS('srp_tr');a.unshift({...row,id:Date.now().toString()});setLS('srp_tr',a);}
+    toast('TL Report saved ☁️');
+  } catch(e){ toast('Save error: '+e.message,'err'); }
+  hideLD();
 }
 
-// =====================================================
-// EMPLOYEE PORTAL (view own reports)
-// =====================================================
+// ══════════════════════════════════════════════════════
+// EMPLOYEE PORTAL
+// ══════════════════════════════════════════════════════
 async function initPortal(){
   await refreshEmpCache();
-  const ps=document.getElementById('portalName');
-  ps.innerHTML='<option value="">— Select your name —</option>';
-  Object.keys(empCache).sort().forEach(n=>{
-    ps.innerHTML+=`<option value="${n}">${n}</option>`;
-  });
 }
 
 async function loadPortal(){
-  const name=g('portalName');
-  if(!name){
-    document.getElementById('portalList').innerHTML=`<div class="report-empty"><i class="fas fa-user-circle"></i><p>Select your name to view reports</p></div>`;
-    return;
-  }
-  load('Loading your reports…');
+  const name=v('portalSel');
+  if(!name){document.getElementById('portalList').innerHTML=`<div style="text-align:center;padding:3rem;color:var(--ink3)"><i class="fas fa-user-circle" style="font-size:3rem;opacity:.2;display:block;margin-bottom:.7rem"></i>Select your name above</div>`;return;}
+  ld('Loading your reports…');
   try{
-    const all=await fetchAllEmpReports();
-    const mine=all.filter(r=>r.name===name);
-    hideLoad();
-    if(!mine.length){
-      document.getElementById('portalList').innerHTML=`<div class="report-empty"><i class="fas fa-inbox"></i><p>No reports found for <b>${name}</b></p></div>`;
-      return;
-    }
+    let all=[];
+    if(CLOUD){const d=await fbGet('emp_reports');if(d)all=Object.values(d);}
+    else all=getLS('srp_er');
+    const mine=all.filter(r=>r.name===name).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    hideLD();
+    if(!mine.length){document.getElementById('portalList').innerHTML=`<div style="text-align:center;padding:3rem;color:var(--ink3)"><i class="fas fa-inbox" style="font-size:3rem;opacity:.2;display:block;margin-bottom:.7rem"></i>No reports found for <b>${name}</b></div>`;return;}
     document.getElementById('portalList').innerHTML=mine.map(r=>`
-      <div class="portal-card">
+      <div class="p-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
           <div>
-            <div class="portal-report-date"><i class="fas fa-calendar" style="color:var(--accent);margin-right:.4rem"></i>${r.date} · ${r.shift} Shift</div>
-            <div class="portal-meta">
-              <span class="badge badge-purple">📋 ${r.issues} Issues</span>
-              <span class="badge badge-teal">✅ ${r.solved} Solved</span>
-              ${r.processing>0?`<span class="badge badge-gold">⏳ ${r.processing} Processing</span>`:''}
-              ${r.physical_support>0?`<span class="badge badge-green">🔧 ${r.physical_support} Physical</span>`:''}
+            <div class="p-date"><i class="fas fa-calendar" style="color:var(--P);margin-right:.35rem"></i>${r.date} · ${r.shift} Shift</div>
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0">
+              <span class="badge b-p">📋 ${r.issues} Issues</span>
+              <span class="badge b-t">✅ ${r.solved} Solved</span>
+              ${r.processing>0?`<span class="badge b-y">⏳ ${r.processing} Processing</span>`:''}
+              ${r.physical_support>0?`<span class="badge b-g">🔧 ${r.physical_support} Physical</span>`:''}
             </div>
-            ${r.special_task?`<div style="font-size:.85rem;color:var(--gold);margin-top:.3rem"><i class="fas fa-star"></i> ${r.special_task.slice(0,80)}${r.special_task.length>80?'…':''}</div>`:''}
+            ${r.special_task?`<div style="font-size:.8rem;color:var(--Y)"><i class="fas fa-star"></i> ${r.special_task.slice(0,80)}${r.special_task.length>80?'…':''}</div>`:''}
           </div>
-          <button class="nav-btn btn-ghost" style="padding:.4rem .9rem;font-size:.82rem" onclick='openModal(${JSON.stringify(r.report_content)})'><i class="fas fa-eye"></i> View</button>
+          <button class="btn btn-ghost btn-sm" onclick='openModal(${JSON.stringify(r.report_content)})'><i class="fas fa-eye"></i> View</button>
         </div>
       </div>`).join('');
-  } catch(e){
-    hideLoad();
-    toast('Error loading reports: '+e.message,'err');
-  }
+  } catch(e){ hideLD(); toast('Error: '+e.message,'err'); }
 }
 
-// =====================================================
+// ══════════════════════════════════════════════════════
 // ADMIN PANEL
-// =====================================================
-async function loadAdminPanel(){
-  if(!isAdmin){ goTo('adminGate'); return; }
-  // Update DB info
-  document.getElementById('dbStatusBadge').textContent = db.mode==='cloud'?'Connected':'Local';
-  document.getElementById('dbStatusBadge').className = 'badge '+(db.mode==='cloud'?'badge-teal':'badge-gold');
-  document.getElementById('dbModeBadge').textContent = db.mode==='cloud'?'Cloud (JSONBin)':'Local Browser';
-  // Load data
-  load('Loading reports…');
+// ══════════════════════════════════════════════════════
+async function loadAdmin(){
+  if(!IS_ADMIN){go('adminGate');return;}
+  ld('Loading admin data…');
   try{
-    allEmpReports = await fetchAllEmpReports();
-    allTLReports  = await fetchAllTLReports();
-    hideLoad();
-    renderEmpTable(allEmpReports);
-    renderTLTable(allTLReports);
-    updateStats();
-    await loadEmpMgmt();
-    // notification
-    const s=await getSettings();
-    sv('notifInput', s.notification||'');
-    document.getElementById('dbCountBadge').textContent = (allEmpReports.length+allTLReports.length)+' records';
-  } catch(e){ hideLoad(); toast('Error: '+e.message,'err'); }
+    if(CLOUD){
+      const [er,tl,emps,settings]=await Promise.all([fbGet('emp_reports'),fbGet('tl_reports'),fbGet('employees'),fbGet('settings')]);
+      allER = er ? Object.entries(er).map(([id,v])=>({...v,_id:id})) : [];
+      allTL = tl ? Object.entries(tl).map(([id,v])=>({...v,_id:id})) : [];
+      empCache={};
+      if(emps) Object.values(emps).forEach(e=>empCache[e.name]=e.eid);
+      if(settings){
+        sv('notifInp',settings.notification||'');
+        if(settings.adminPass) localStorage.setItem(PASS_K,settings.adminPass);
+      }
+    } else {
+      allER=getLS('srp_er'); allTL=getLS('srp_tr'); initLocalEmps();
+      sv('notifInp',localStorage.getItem(NOTIF_K)||'');
+    }
+    allER.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    allTL.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    hideLD();
+    renderEmpTable(allER); renderTLTable(allTL); updateStats(); await loadEmpMgmt();
+    document.getElementById('dbSt').textContent=CLOUD?'Connected':'Local';
+    document.getElementById('dbSt').className='badge '+(CLOUD?'b-t':'b-y');
+    document.getElementById('dbMode').textContent=CLOUD?'Firebase Realtime DB':'Local Browser';
+    document.getElementById('dbUrl').textContent=localStorage.getItem(CFG_K)||'Local only';
+    document.getElementById('dbCount').textContent=(allER.length+allTL.length)+' records';
+  } catch(e){ hideLD(); toast('Load error: '+e.message,'err'); }
 }
 
 function updateStats(){
-  document.getElementById('st0').textContent=allEmpReports.length;
-  document.getElementById('st1').textContent=allTLReports.length;
-  document.getElementById('st2').textContent=allEmpReports.reduce((a,r)=>a+(r.issues||0),0)+allTLReports.reduce((a,r)=>a+(r.issues||0),0);
-  document.getElementById('st3').textContent=allEmpReports.reduce((a,r)=>a+(r.solved||0),0)+allTLReports.reduce((a,r)=>a+(r.solved||0),0);
+  sv2('s0',allER.length); sv2('s1',allTL.length);
+  sv2('s2',allER.reduce((a,r)=>a+(r.issues||0),0)+allTL.reduce((a,r)=>a+(r.issues||0),0));
+  sv2('s3',allER.reduce((a,r)=>a+(r.solved||0),0)+allTL.reduce((a,r)=>a+(r.solved||0),0));
 }
 
-// ── EMPLOYEE REPORTS TABLE ──
+// ── TABLES ──
+function emptyRow(cols,msg){return`<tr><td colspan="${cols}" style="text-align:center;padding:2.5rem;color:var(--ink3)"><i class="fas fa-inbox" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>${msg}</td></tr>`;}
+
 function renderEmpTable(data){
-  const tb=document.getElementById('empTBody');
-  if(!data.length){
-    tb.innerHTML=`<tr><td colspan="8"><div class="report-empty"><i class="fas fa-inbox"></i><p>No employee reports yet</p></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML=data.map(r=>`
-    <tr>
-      <td><b>${r.date}</b></td>
-      <td>${r.name}<br><small style="color:var(--muted)">${r.employee_id}</small></td>
-      <td><span class="badge badge-gray">${r.shift}</span></td>
-      <td><span class="badge badge-purple">${r.issues}</span></td>
-      <td><span class="badge badge-teal">${r.solved}</span></td>
-      <td>${r.physical_support>0?`<span class="badge badge-green">${r.physical_support}</span>`:'-'}</td>
-      <td>${r.special_task?'<i class="fas fa-star" style="color:var(--gold)"></i>':'-'}</td>
-      <td style="white-space:nowrap">
-        <button class="nav-btn btn-ghost" style="padding:.35rem .7rem;font-size:.8rem;margin-right:.35rem" onclick='openModal(${JSON.stringify(r.report_content)})'><i class="fas fa-eye"></i></button>
-        <button class="nav-btn btn-danger" style="padding:.35rem .7rem;font-size:.8rem" onclick="delReport('emp','${r.id}')"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>`).join('');
+  const tb=document.getElementById('eTBody');
+  if(!data.length){tb.innerHTML=emptyRow(8,'No employee reports yet');return;}
+  tb.innerHTML=data.map(r=>`<tr>
+    <td><b>${r.date||'—'}</b></td>
+    <td>${r.name}<br><small style="color:var(--ink3)">${r.employee_id}</small></td>
+    <td><span class="badge b-gray">${r.shift}</span></td>
+    <td><span class="badge b-p">${r.issues}</span></td>
+    <td><span class="badge b-t">${r.solved}</span></td>
+    <td>${r.physical_support>0?`<span class="badge b-g">${r.physical_support}</span>`:'-'}</td>
+    <td>${r.special_task?'<i class="fas fa-star" style="color:var(--Y)"></i>':'-'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" style="margin-right:.35rem" onclick='openModal(${JSON.stringify(r.report_content)})'><i class="fas fa-eye"></i></button>
+      <button class="btn btn-r btn-sm" onclick="delReport('emp','${r._id||r.id}')"><i class="fas fa-trash"></i></button>
+    </td></tr>`).join('');
 }
 
-function filterEmpTable(){
-  const q=g('empSearch').toLowerCase();
-  renderEmpTable(allEmpReports.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)));
-}
-
-// ── TL REPORTS TABLE ──
 function renderTLTable(data){
-  const tb=document.getElementById('tlTBody');
-  if(!data.length){
-    tb.innerHTML=`<tr><td colspan="8"><div class="report-empty"><i class="fas fa-inbox"></i><p>No TL reports yet</p></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML=data.map(r=>`
-    <tr>
-      <td><b>${r.date}</b></td>
-      <td>${r.tl_name}</td>
-      <td><span class="badge badge-gray">${r.shift}</span></td>
-      <td><span class="badge badge-purple">${r.issues}</span></td>
-      <td><span class="badge badge-teal">${r.solved}</span></td>
-      <td><span class="badge badge-green">${r.physical_total||0}</span></td>
-      <td><span class="badge badge-gold">${r.processing||0}</span></td>
-      <td style="white-space:nowrap">
-        <button class="nav-btn btn-ghost" style="padding:.35rem .7rem;font-size:.8rem;margin-right:.35rem" onclick='openModal(${JSON.stringify(r.report_content)})'><i class="fas fa-eye"></i></button>
-        <button class="nav-btn btn-danger" style="padding:.35rem .7rem;font-size:.8rem" onclick="delReport('tl','${r.id}')"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>`).join('');
+  const tb=document.getElementById('tTBody');
+  if(!data.length){tb.innerHTML=emptyRow(8,'No TL reports yet');return;}
+  tb.innerHTML=data.map(r=>`<tr>
+    <td><b>${r.date||'—'}</b></td>
+    <td>${r.tl_name}</td>
+    <td><span class="badge b-gray">${r.shift}</span></td>
+    <td><span class="badge b-p">${r.issues}</span></td>
+    <td><span class="badge b-t">${r.solved}</span></td>
+    <td><span class="badge b-g">${r.physical_total||0}</span></td>
+    <td><span class="badge b-y">${r.processing||0}</span></td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" style="margin-right:.35rem" onclick='openModal(${JSON.stringify(r.report_content)})'><i class="fas fa-eye"></i></button>
+      <button class="btn btn-r btn-sm" onclick="delReport('tl','${r._id||r.id}')"><i class="fas fa-trash"></i></button>
+    </td></tr>`).join('');
 }
 
-function filterTLTable(){
-  const q=g('tlSearch').toLowerCase();
-  renderTLTable(allTLReports.filter(r=>(r.tl_name||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)));
-}
+function filterET(){ renderEmpTable(allER.filter(r=>((r.name||'')+(r.date||'')).toLowerCase().includes(v('eSearch').toLowerCase()))); }
+function filterTT(){ renderTLTable(allTL.filter(r=>((r.tl_name||'')+(r.date||'')).toLowerCase().includes(v('tSearch').toLowerCase()))); }
 
-// ── DELETE REPORT ──
-async function delReport(type, id){
-  if(!confirm('Delete this report permanently?')) return;
-  load('Deleting…');
+async function delReport(type,id){
+  if(!confirm('Delete this report permanently?'))return;
+  ld('Deleting…');
   try{
-    await deleteReport(type, id);
-    if(type==='emp') allEmpReports=allEmpReports.filter(r=>r.id!==id), renderEmpTable(allEmpReports);
-    else allTLReports=allTLReports.filter(r=>r.id!==id), renderTLTable(allTLReports);
-    updateStats();
-    hideLoad(); toast('Report deleted');
-  } catch(e){ hideLoad(); toast('Delete failed: '+e.message,'err'); }
+    if(CLOUD) await fbDelete((type==='emp'?'emp_reports':'tl_reports')+'/'+id);
+    else{
+      const key=type==='emp'?'srp_er':'srp_tr';
+      setLS(key,getLS(key).filter(r=>(r._id||r.id)!==id));
+    }
+    if(type==='emp'){allER=allER.filter(r=>(r._id||r.id)!==id);renderEmpTable(allER);}
+    else{allTL=allTL.filter(r=>(r._id||r.id)!==id);renderTLTable(allTL);}
+    updateStats(); hideLD(); toast('Deleted');
+  } catch(e){ hideLD(); toast(e.message,'err'); }
 }
 
-// ── EMPLOYEES MANAGEMENT ──
+// ── EMPLOYEE MANAGEMENT ──
 async function loadEmpMgmt(){
-  await refreshEmpCache();
-  const el=document.getElementById('empList');
+  const el=document.getElementById('empMgList');
   const names=Object.keys(empCache).sort();
-  if(!names.length){el.innerHTML=`<div class="report-empty"><i class="fas fa-user-slash"></i><p>No employees yet</p></div>`;return;}
-  el.innerHTML=names.map(n=>`
-    <div class="emp-item">
-      <div><div class="emp-name">${n}</div><div class="emp-id"><i class="fas fa-id-badge" style="margin-right:.3rem"></i>${empCache[n]}</div></div>
-      <button class="nav-btn btn-danger" style="padding:.35rem .75rem;font-size:.8rem" onclick="removeEmp('${n}')"><i class="fas fa-trash"></i></button>
-    </div>`).join('');
-}
-
-async function addEmployee(){
-  const name=g('newEName').trim(), id=g('newEId').trim();
-  if(!name||!id){toast('Enter both name and ID','err');return;}
-  load('Adding employee…');
-  try{
-    await addEmpToDB(name, id);
-    sv('newEName',''); sv('newEId','');
-    await loadEmpMgmt();
-    hideLoad(); toast(`${name} added!`);
-  } catch(e){ hideLoad(); toast(e.message,'err'); }
-}
-
-async function removeEmp(name){
-  if(!confirm(`Remove ${name} from the system?`)) return;
-  load('Removing…');
-  try{
-    await removeEmpFromDB(name);
-    await loadEmpMgmt();
-    hideLoad(); toast(`${name} removed`);
-  } catch(e){ hideLoad(); toast('Error: '+e.message,'err'); }
-}
-
-// ── NOTIFICATION ──
-async function saveNotif(){
-  const txt=g('notifInput').trim();
-  if(!txt){toast('Enter notification text','err');return;}
-  load('Saving…');
-  try{
-    await saveSettings({notification:txt});
-    document.getElementById('notifTxt').textContent=txt;
-    hideLoad(); toast('Notification updated & live!');
-  } catch(e){ hideLoad(); toast('Error: '+e.message,'err'); }
-}
-
-function previewNotif(){
-  document.getElementById('notifTxt').textContent=g('notifInput')||'(empty)';
-  toast('Preview shown in banner','info');
-}
-
-// ── PASSWORD ──
-async function changePwd(){
-  const cur=g('curPwd'), np=g('newPwd'), np2=g('newPwd2');
-  if(cur!==getAdminPass()){toast('Current password is wrong','err');return;}
-  if(np.length<4){toast('New password must be at least 4 characters','err');return;}
-  if(np!==np2){toast('Passwords do not match','err');return;}
-  load('Updating password…');
-  try{
-    await saveSettings({adminPass:np});
-    sv('curPwd',''); sv('newPwd',''); sv('newPwd2','');
-    hideLoad(); toast('Password updated successfully!');
-  } catch(e){ hideLoad(); toast('Error: '+e.message,'err'); }
-}
-
-async function resetPwd(){
-  if(!confirm('Reset admin password to "admin"?')) return;
-  load('Resetting…');
-  try{
-    await saveSettings({adminPass:'admin'});
-    hideLoad(); toast('Password reset to "admin"');
-  } catch(e){ hideLoad(); toast('Error: '+e.message,'err'); }
+  if(!names.length){el.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--ink3)">No employees yet</div>`;return;}
+  el.innerHTML=names.map(n=>`<div class="emp-row">
+    <div><div class="emp-nm">${n}</div><div class="emp-id-lbl"><i class="fas fa-id-badge" style="margin-right:.3rem"></i>${empCache[n]}</div></div>
+    <button class="btn btn-r btn-sm" onclick="removeEmp('${n}')"><i class="fas fa-trash"></i></button>
+  </div>`).join('');
 }
 
 // ── DB SETTINGS ──
-async function reconnectDB(){
-  const key=g('newCfgKey').trim();
-  if(!key){toast('Enter new API key','err');return;}
-  const cfg=getCfg();
-  if(cfg){ cfg.key=key; localStorage.setItem(CFG_KEY,JSON.stringify(cfg)); }
-  toast('Key updated. Reloading…','info');
-  setTimeout(()=>location.reload(),1000);
+async function reconnect(){
+  const url=v('newDbUrl').trim().replace(/\/+$/,'');
+  if(!url){toast('Enter new Firebase URL','err');return;}
+  localStorage.setItem(CFG_K,url);
+  toast('URL updated. Reloading…','info');
+  setTimeout(()=>location.reload(),800);
 }
-
-function clearConfig(){
-  if(!confirm('This will remove cloud config and go back to setup. Continue?')) return;
-  localStorage.removeItem(CFG_KEY);
-  localStorage.removeItem(LOCAL_KEY);
+function clearCfg(){
+  if(!confirm('Remove cloud config and return to setup?'))return;
+  localStorage.removeItem(CFG_K);localStorage.removeItem(MODE_K);
   location.reload();
 }
 
-// ── TAB SWITCH ──
-function switchTab(id){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.currentTarget.classList.add('active');
+// ── TABS ──
+function tab(btn,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
 }
 
-// =====================================================
+// ══════════════════════════════════════════════════════
 // MODAL
-// =====================================================
+// ══════════════════════════════════════════════════════
 function openModal(content){
-  document.getElementById('modalContent').textContent=content;
-  document.getElementById('reportModal').classList.add('open');
+  document.getElementById('modalPre').textContent=content;
+  document.getElementById('modal').classList.add('on');
 }
-
 function closeModal(e){
-  if(!e||e.target===document.getElementById('reportModal')||e.currentTarget.classList?.contains('modal-close')){
-    document.getElementById('reportModal').classList.remove('open');
+  if(!e||e.target===document.getElementById('modal')||e.currentTarget.tagName==='BUTTON'){
+    document.getElementById('modal').classList.remove('on');
   }
 }
-
-function copyModalContent(){
-  navigator.clipboard.writeText(document.getElementById('modalContent').textContent)
-    .then(()=>toast('Copied to clipboard!'));
+function cpModal(){
+  navigator.clipboard.writeText(document.getElementById('modalPre').textContent)
+    .then(()=>toast('Copied!'));
 }
 
-// =====================================================
+// ══════════════════════════════════════════════════════
 // UTILITIES
-// =====================================================
-function g(id){ return (document.getElementById(id)||{}).value||''; }
-function sv(id,v){ const el=document.getElementById(id); if(el)el.value=v; }
-function getLocal(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{return [];} }
-function saveLocal(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+// ══════════════════════════════════════════════════════
+function v(id){return(document.getElementById(id)||{}).value||'';}
+function sv(id,val){const el=document.getElementById(id);if(el)el.value=val;}
+function sv2(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function getLS(k){try{return JSON.parse(localStorage.getItem(k)||'[]');}catch{return[];}}
+function setLS(k,v2){localStorage.setItem(k,JSON.stringify(v2));}
 
-function copyOut(id){
-  const t=document.getElementById(id).textContent;
-  if(!t||t.includes('Report will')){ toast('Generate a report first','err'); return; }
-  navigator.clipboard.writeText(t).then(()=>toast('Copied!')).catch(()=>toast('Copy failed','err'));
+function copyOut(wrId){
+  const pre=document.getElementById(wrId).querySelector('pre');
+  if(!pre||!pre.textContent.trim()){toast('Generate a report first','err');return;}
+  navigator.clipboard.writeText(pre.textContent).then(()=>toast('Copied!'));
 }
 
-function toast(msg, type='ok'){
-  const div=document.createElement('div');
-  div.className=`toast-item ${type}`;
-  const icon=type==='ok'?'fa-check-circle':type==='err'?'fa-exclamation-circle':'fa-info-circle';
-  div.innerHTML=`<i class="fas ${icon}"></i><span style="flex:1">${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer;font-size:.9rem;opacity:.7"><i class="fas fa-times"></i></button>`;
-  document.getElementById('toastArea').appendChild(div);
-  setTimeout(()=>{ div.style.opacity='0'; div.style.transform='translateX(200px)'; setTimeout(()=>div.remove(),300); }, 4000);
+function toast(msg,type='ok'){
+  const d=document.createElement('div');
+  d.className=`toast ${type}`;
+  const ico=type==='ok'?'fa-check-circle':type==='err'?'fa-exclamation-circle':'fa-info-circle';
+  d.innerHTML=`<i class="fas ${ico}"></i><span style="flex:1">${msg}</span>`;
+  document.getElementById('toasts').appendChild(d);
+  setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(120px)';setTimeout(()=>d.remove(),300);},3800);
 }
 
-function load(txt='Processing…'){
-  document.getElementById('loaderTxt').textContent=txt;
+function ld(t='Processing…'){
+  document.getElementById('ldTxt').textContent=t;
   document.getElementById('loader').classList.add('on');
 }
-function hideLoad(){ document.getElementById('loader').classList.remove('on'); }
+function hideLD(){document.getElementById('loader').classList.remove('on');}
 
 function setPill(cls,txt){
-  const p=document.getElementById('cloudPill');
-  p.className='nav-pill'+(cls?' '+cls:'');
-  const icon=cls==='ok'?'fa-cloud-upload-alt':cls==='err'?'fa-exclamation-triangle':'fa-wifi';
-  p.innerHTML=`<span class="nav-dot"></span> ${txt}`;
+  const p=document.getElementById('pill');
+  p.className='status-pill'+(cls?' '+cls:'');
+  p.innerHTML=`<span class="status-dot${cls==='ok'?' pulse':''}"></span> ${txt}`;
 }
 
-function toggleTheme(){
-  const html=document.documentElement;
-  const isDark=html.getAttribute('data-theme')==='dark';
-  const icon=document.getElementById('themeIcon');
-  if(isDark){ html.removeAttribute('data-theme'); icon.className='fas fa-moon'; localStorage.setItem('srp_theme','light'); }
-  else { html.setAttribute('data-theme','dark'); icon.className='fas fa-sun'; localStorage.setItem('srp_theme','dark'); }
+function toggleDark(){
+  const h=document.documentElement,ic=document.getElementById('thIcon');
+  if(h.hasAttribute('data-dark')){h.removeAttribute('data-dark');ic.className='fas fa-moon';localStorage.setItem('srp_theme','light');}
+  else{h.setAttribute('data-dark','');ic.className='fas fa-sun';localStorage.setItem('srp_theme','dark');}
 }
-
 function loadTheme(){
-  const t=localStorage.getItem('srp_theme');
-  if(t==='dark'){ document.documentElement.setAttribute('data-theme','dark'); document.getElementById('themeIcon').className='fas fa-sun'; }
+  if(localStorage.getItem('srp_theme')==='dark'){document.documentElement.setAttribute('data-dark','');document.getElementById('thIcon').className='fas fa-sun';}
 }
 </script>
 </body>
