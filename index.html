@@ -433,7 +433,7 @@ tr:hover td{background:rgba(92,53,232,.03)}
 
       <div class="sec tl-sec">
         <div class="sec-head"><span class="sec-ico t-ico"><i class="fas fa-users"></i></span>Processing Responsible Persons</div>
-        <input type="text" id="tPersons" value="Sakib + labib + Sujan" style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.65rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;transition:border-color var(--tr)">
+        <input type="text" id="tPersons" value="Shamsur + Rony" style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.65rem 1rem;width:100%;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;transition:border-color var(--tr)">
       </div>
 
       <div class="sec tl-sec">
@@ -1124,7 +1124,7 @@ async function genTL(){
   const date=v('tDate'),tlName=v('tName'),shift=v('tShift');
   const issues=v('tIssues').trim().split('\n').filter(l=>l.trim());
   const physLines=v('tPhys').trim().split('\n').filter(l=>l.trim());
-  const persons=v('tPersons').trim()||'Sakib + labib + Sujan';
+  const persons=v('tPersons').trim()||'Shamsur + Rony';
   const proc=v('tSS').trim().split(/\r?\n/).map(l=>l.replace(/"/g,'').trim()).filter(l=>l);
 
   if(!shift){toast('Select a shift','err');return;}
